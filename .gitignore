@@ -1,0 +1,6 @@
+﻿# credenciais (NUNCA commitar)
+loja-automacao/credentials/service_account.json
+loja-automacao/credentials/*.json
+.env
+*.key
+*.pem

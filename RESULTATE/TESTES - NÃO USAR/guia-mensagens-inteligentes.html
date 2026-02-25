@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guia: Mensagens Simples vs Com Pendências</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; min-height: 100vh; }
+        .container { max-width: 1100px; margin: 0 auto; background: white; border-radius: 20px; padding: 50px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        h1 { color: #667eea; font-size: 2.5em; margin-bottom: 20px; text-align: center; }
+        .subtitle { text-align: center; color: #666; font-size: 1.2em; margin-bottom: 40px; }
+        .section { margin: 40px 0; }
+        .section-title { color: #667eea; font-size: 2em; margin-bottom: 25px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .logic-box { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 35px; border-radius: 15px; margin: 30px 0; }
+        .logic-box h3 { font-size: 1.5em; margin-bottom: 20px; }
+        .logic-box ul { margin-left: 20px; line-height: 2.5; font-size: 1.1em; }
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin: 30px 0; }
+        .comparison-card { padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .simple-msg { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .pending-msg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .comparison-card h3 { font-size: 1.5em; margin-bottom: 20px; }
+        .message-preview { background: #25D366; padding: 25px; border-radius: 15px; margin: 25px 0; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3); }
+        .message-content { background: white; color: #333; padding: 25px; border-radius: 10px; white-space: pre-line; line-height: 1.8; font-size: 1.05em; }
+        .table-example { width: 100%; border-collapse: collapse; margin: 25px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .table-example th { background: #4285f4; color: white; padding: 15px; text-align: left; }
+        .table-example td { padding: 15px; border-bottom: 1px solid #e0e0e0; vertical-align: top; }
+        .table-example tr:nth-child(even) { background: #f9f9f9; }
+        .badge { display: inline-block; padding: 8px 15px; border-radius: 20px; font-size: 0.85em; font-weight: bold; margin-left: 10px; }
+        .badge-simple { background: #ff9800; color: white; }
+        .badge-pending { background: #4caf50; color: white; }
+        .info-box { background: #e3f2fd; border-left: 5px solid #2196f3; padding: 25px; border-radius: 10px; margin: 25px 0; }
+        .tip-box { background: #fff9e6; border-left: 5px solid #ffd700; padding: 25px; border-radius: 10px; margin: 25px 0; }
+        .tip-box::before { content: "💡 "; font-size: 1.5em; margin-right: 10px; }
+        .code-inline { background: #f5f5f5; padding: 3px 8px; border-radius: 4px; font-family: 'Courier New', monospace; color: #d63384; }
+        @media (max-width: 768px) { .container { padding: 25px; } .comparison { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Mensagens Inteligentes</h1>
+        <p class="subtitle">O script detecta automaticamente qual mensagem enviar!</p>
+
+        <!-- LÓGICA -->
+        <div class="logic-box">
+            <h3>🤖 Como o Script Decide:</h3>
+            <ul>
+                <li><strong>✅ Mensagem SIMPLES</strong> quando a coluna "pendencias" está:
+                    <ul style="margin-top: 10px;">
+                        <li>Vazia (em branco)</li>
+                        <li>Com "Mensagem da semana - alinhamento"</li>
+                        <li>Só "alinhamento"</li>
+                        <li>Só "mensagem simples"</li>
+                    </ul>
+                </li>
+                <li style="margin-top: 20px;"><strong>📋 Mensagem COM CHECKLIST</strong> quando tem pendências específicas</li>
+            </ul>
+        </div>
+
+        <!-- COMPARAÇÃO -->
+        <div class="section">
+            <div class="section-title">📱 Como Ficam as Mensagens</div>
+
+            <div class="comparison">
+                <!-- MENSAGEM SIMPLES -->
+                <div class="comparison-card simple-msg">
+                    <h3>🟠 Mensagem Simples</h3>
+                    <p style="font-size: 0.95em; margin-bottom: 20px; opacity: 0.9;">
+                        Quando não tem pendências ou só tem "alinhamento"
+                    </p>
+                    <div class="message-preview">
+                        <div class="message-content">Olá, Maria Oliveira! Bom dia! 😊
+
+Passando para desejar uma ótima semana e verificar se precisam de algo.
+
+Estou à disposição para qualquer dúvida ou demanda!
+
+Vamos juntos! 🚀</div>
+                    </div>
+                </div>
+
+                <!-- MENSAGEM COM PENDÊNCIAS -->
+                <div class="comparison-card pending-msg">
+                    <h3>🟢 Mensagem com Checklist</h3>
+                    <p style="font-size: 0.95em; margin-bottom: 20px; opacity: 0.9;">
+                        Quando tem pendências específicas
+                    </p>
+                    <div class="message-preview">
+                        <div class="message-content">Olá, João Silva! Bom dia! 😊
+
+Espero que tenha uma ótima semana!
+
+Segue nossos alinhamentos:
+
+☑️ Aprovar post de quarta-feira
+☑️ Validar copy da campanha
+☑️ Enviar relatório semanal
+
+Qualquer dúvida ou informação, só me chamar.
+
+Vamos juntos! 🚀</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXEMPLOS NA PLANILHA -->
+        <div class="section">
+            <div class="section-title">📊 Exemplos na Planilha</div>
+
+            <table class="table-example">
+                <thead>
+                    <tr>
+                        <th>nome</th>
+                        <th>grupo_whatsapp</th>
+                        <th>pendencias</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Tech Solutions</strong></td>
+                        <td>Grupo Tech Solutions</td>
+                        <td>Liberar 5 posts<br>Revisar cronograma<br>Agendar reunião</td>
+                        <td><span class="badge badge-pending">Com Checklist</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Beleza Natural</strong></td>
+                        <td>Grupo Beleza Natural</td>
+                        <td><code style="color: #ff9800;">Mensagem da semana - alinhamento</code></td>
+                        <td><span class="badge badge-simple">Simples</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>João Silva</strong></td>
+                        <td>Grupo João</td>
+                        <td>Aprovar post<br>Validar copy<br>Enviar relatório</td>
+                        <td><span class="badge badge-pending">Com Checklist</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Maria Oliveira</strong></td>
+                        <td>Grupo Maria</td>
+                        <td><em style="color: #999;">(vazio)</em></td>
+                        <td><span class="badge badge-simple">Simples</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Consultoria ABC</strong></td>
+                        <td>Grupo Consultoria</td>
+                        <td>Revisar proposta<br>Aprovar textos<br>Confirmar investimento</td>
+                        <td><span class="badge badge-pending">Com Checklist</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Empresa XYZ</strong></td>
+                        <td>Grupo XYZ</td>
+                        <td><code style="color: #ff9800;">alinhamento</code></td>
+                        <td><span class="badge badge-simple">Simples</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- O QUE MUDOU -->
+        <div class="section">
+            <div class="section-title">🆕 O Que Mudou no Script</div>
+
+            <div class="info-box">
+                <strong style="font-size: 1.2em; display: block; margin-bottom: 15px;">3 Novidades:</strong>
+                
+                <ol style="margin-left: 20px; line-height: 2;">
+                    <li><strong>Função de detecção:</strong> <code class="code-inline">precisa_mensagem_simples()</code>
+                        <p style="margin: 10px 0 0 0; color: #666;">Verifica se pendências está vazia ou tem palavras-chave</p>
+                    </li>
+                    <li><strong>Dois templates de mensagem:</strong>
+                        <ul style="margin-top: 10px;">
+                            <li>Template simples (genérico e amigável)</li>
+                            <li>Template com checklist (detalhado)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Label visual no HTML:</strong>
+                        <p style="margin: 10px 0 0 0; color: #666;">Badge laranja = Simples | Badge verde = Com pendências</p>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- PALAVRAS-CHAVE -->
+        <div class="section">
+            <div class="section-title">🔑 Palavras-Chave que Ativam Mensagem Simples</div>
+
+            <div class="tip-box">
+                <strong>O script reconhece automaticamente:</strong>
+                <ul style="margin: 15px 0 0 20px; line-height: 2;">
+                    <li><code class="code-inline">(vazio)</code> - Célula em branco</li>
+                    <li><code class="code-inline">Mensagem da semana - alinhamento</code></li>
+                    <li><code class="code-inline">Mensagem da semana</code></li>
+                    <li><code class="code-inline">alinhamento</code></li>
+                    <li><code class="code-inline">mensagem simples</code></li>
+                </ul>
+                <p style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; color: #333;">
+                    <strong>💡 Dica:</strong> Não precisa ser exato! O script ignora maiúsculas/minúsculas e espaços extras.
+                </p>
+            </div>
+        </div>
+
+        <!-- WORKFLOW -->
+        <div class="section">
+            <div class="section-title">📅 Seu Workflow Agora</div>
+
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 35px; border-radius: 15px;">
+                <h3 style="font-size: 1.5em; margin-bottom: 25px;">🗓️ Na Sexta-feira:</h3>
+                <ol style="margin-left: 20px; line-height: 2.5; font-size: 1.1em;">
+                    <li>Abra a planilha no Google Sheets</li>
+                    <li>Para cada cliente:
+                        <ul style="margin-top: 10px;">
+                            <li><strong>Tem pendências?</strong> → Liste normalmente</li>
+                            <li><strong>Só quer dar oi?</strong> → Deixe vazio OU escreva "alinhamento"</li>
+                        </ul>
+                    </li>
+                    <li>Salva automaticamente! ☁️</li>
+                </ol>
+
+                <h3 style="font-size: 1.5em; margin: 30px 0 25px 0;">🌙 Domingo à noite:</h3>
+                <ol style="margin-left: 20px; line-height: 2.5; font-size: 1.1em;">
+                    <li>Rode: <code style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 5px;">python gerar_mensagens_grupos_v2.py</code></li>
+                    <li>Script mostra: "X mensagens COM pendências, Y mensagens SIMPLES"</li>
+                    <li>Arquivo HTML gerado! 🎉</li>
+                </ol>
+
+                <h3 style="font-size: 1.5em; margin: 30px 0 25px 0;">☀️ Segunda de manhã:</h3>
+                <ol style="margin-left: 20px; line-height: 2.5; font-size: 1.1em;">
+                    <li>Abra o HTML no navegador</li>
+                    <li>Mensagens simples têm <strong style="background: #ff9800; padding: 3px 10px; border-radius: 15px;">badge LARANJA</strong></li>
+                    <li>Mensagens com pendências têm <strong style="background: #4caf50; padding: 3px 10px; border-radius: 15px;">badge VERDE</strong></li>
+                    <li>Copie e cole cada uma! ⚡</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- RESULTADO -->
+        <div class="section">
+            <div class="section-title">✨ Resultado Final</div>
+
+            <div class="tip-box">
+                <strong style="font-size: 1.2em;">Você economiza ainda mais tempo porque:</strong>
+                <ul style="margin: 15px 0 0 20px; line-height: 2;">
+                    <li>✅ Não precisa pensar em mensagem diferente para cada tipo</li>
+                    <li>✅ Script decide automaticamente</li>
+                    <li>✅ Mantém tom profissional em ambos os casos</li>
+                    <li>✅ Cliente sem pendências não recebe mensagem vazia</li>
+                    <li>✅ Visual claro (badges coloridos) para você saber qual é qual</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

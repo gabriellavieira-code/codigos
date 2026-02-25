@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mensagens de Segunda-feira</title>
+
+  <style>
+    :root {
+      --bg: #F4F6F8; 
+      --card: #FFFFFF;
+      --text: #111111;
+      --muted: #6B6B6B;
+      --yellow: #FFD200;
+      --yellow-2: #FFC400;
+      --border: #EAEAEA;
+      --soft: #F7F7F7;
+      --ok: #2E7D32;
+      --urg: #C62828;
+      --wpp: #25D366;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 40px; min-height: 100vh; color: var(--text); }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    .header { background: var(--card); padding: 32px; border-radius: 16px; margin-bottom: 32px; border: 1px solid var(--border); position: sticky; top: 20px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+    .header h1 { font-size: 2.2rem; font-weight: 800; color: #000; margin-bottom: 8px; }
+
+    .motivational-text { font-size: 1.1rem; color: #D84315; font-weight: 700; font-style: italic; margin-bottom: 15px; background: #FFF3E0; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #FF9800; }
+
+    .header p.meta-info { color: var(--muted); font-size: 0.95rem; margin-bottom: 15px; }
+
+    .progress-wrap { background: var(--soft); border-radius: 10px; padding: 15px; }
+    .progress-text { font-weight: 800; color: var(--ok); font-size: 1rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .progress-track { background: #ddd; height: 12px; border-radius: 10px; overflow: hidden; }
+    .progress-bar { background: var(--ok); height: 100%; width: 0%; transition: width 0.4s ease; }
+
+    .instructions { background: var(--card); border-left: 6px solid var(--yellow); padding: 24px; border-radius: 14px; margin-bottom: 32px; border: 1px solid var(--border); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .instructions h3 { font-weight: 800; margin-bottom: 12px; }
+    .instructions ol { margin-left: 20px; line-height: 1.8; color: var(--muted); }
+
+    .message-card { background: var(--card); padding: 32px; border-radius: 18px; margin-bottom: 28px; border: 1px solid var(--border); transition: 0.2s ease; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .message-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+
+    .client-name { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+    .group-name { color: var(--muted); font-size: 0.95rem; margin: 8px 0 14px 0; font-style: italic; }
+
+    .pill { padding: 6px 14px; border-radius: 999px; font-size: 0.75rem; font-weight: 800; display: inline-block; margin-right: 8px; }
+    .message-type { background: var(--ok); color: white; font-weight: 700; }
+    .message-type-simple { background: var(--yellow); color: #000; font-weight: 900; }
+    .status-ok { background: var(--ok); color: white; }
+    .status-revisar { background: var(--yellow); color: #000; }
+    .status-urgente { background: var(--urg); color: white; }
+
+    .message-preview { margin-top: 22px; }
+    .message-content { background: var(--soft); padding: 22px; border-radius: 12px; line-height: 1.8; white-space: pre-line; word-break: break-word; margin-bottom: 18px; font-size: 0.95rem; border: 1px solid var(--border); }
+
+    .copy-button { background: var(--yellow); color: #000; border: none; padding: 14px; border-radius: 10px; font-weight: 900; cursor: pointer; width: 100%; transition: 0.2s ease; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+    .copy-button:hover { background: var(--yellow-2); transform: scale(1.02); }
+
+    .btn-wpp { background: var(--wpp); color: white; }
+    .btn-wpp:hover { background: #128C7E; }
+
+    .btn-dark { background: #111; color: #fff; }
+    .btn-dark:hover { background: #000; }
+    .copied { background: var(--ok) !important; color: white !important; }
+
+    .sent-info { margin-top: 10px; color: var(--muted); font-size: 0.9rem; display: none; }
+
+    .todo { margin-top: 16px; padding: 16px; border-radius: 12px; border: 1px solid var(--border); background: #fff; }
+    .todo h4 { font-size: 0.95rem; font-weight: 900; margin-bottom: 10px; color: #000; }
+    .todo-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 8px; border-radius: 10px; }
+    .todo-item:hover { background: #FAFAFA; }
+    .todo-item input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--yellow); }
+    .todo-text { color: #111; font-size: 0.95rem; line-height: 1.4; word-break: break-word; flex: 1; }
+    .todo-text.done { text-decoration: line-through; color: var(--muted); }
+    .todo-actions { display: flex; gap: 10px; margin-top: 10px; }
+    .mini { padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: #fff; cursor: pointer; font-weight: 800; }
+    .mini:hover { background: #FAFAFA; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🗂️ Mensagens de Segunda-feira</h1>
+
+      <div class="motivational-text">🌟 'A persistência é o caminho do êxito. Bora pra cima!'</div>
+
+      <p class="meta-info">Gerado em 23/02/2026 às 16:53 • RUN: 3096f0de</p>
+
+      <div class="progress-wrap">
+        <div class="progress-text">
+          <span>Progresso de Envios</span>
+          <span><span id="prog-count">0</span> / <span id="prog-total">0</span></span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-bar" id="prog-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <h3>💡 Como usar:</h3>
+      <ol>
+        <li>Clique em <strong>"📱 ENVIAR NO WHATSAPP"</strong> (Ele já abre o App com o texto copiado!)</li>
+        <li>Escolha o grupo do cliente e envie</li>
+        <li>Volte aqui e clique em <strong>"MARCAR COMO ENVIADO"</strong></li>
+      </ol>
+    </div>
+
+    <div class="message-card" data-key="cervejaria_alquimistas__alquimistas_&amp;_resultate" data-nome="CERVEJARIA ALQUIMISTAS" data-grupo="Alquimistas &amp; Resultate" data-id="">
+      <div class="client-name">CERVEJARIA ALQUIMISTAS</div>
+      <span class="pill status-ok">✅ OK</span>
+      <div class="group-name">📱 Alquimistas &amp; Resultate</div>
+      <span class="pill message-type">Mensagem com Pendências</span>
+
+      <div class="message-preview">
+        <div class="message-content">Olá, TIME CERVEJARIA ALQUIMISTAS! Boa tarde! 😊
+
+Como vão?
+
+Espero que tenham uma ótima semana!
+
+Passando para deixar nossos alinhamentos da semana:
+
+☑️ Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?
+☑️ Revisar materiais aprovados no trello
+☑️ Programar stories até o fim do mês
+☑️ Organizar atividades no Jira
+
+Qualquer dúvida ou informação, só me chamar.
+
+Vamos juntos! 🚀</div>
+
+        <button class="copy-button btn-wpp" data-msg="Olá, TIME CERVEJARIA ALQUIMISTAS! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?&#10;☑️ Revisar materiais aprovados no trello&#10;☑️ Programar stories até o fim do mês&#10;☑️ Organizar atividades no Jira&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="enviarWhatsapp(this)">
+          📱 ENVIAR DIRETO NO WHATSAPP
+        </button>
+
+        <button class="copy-button" data-msg="Olá, TIME CERVEJARIA ALQUIMISTAS! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?&#10;☑️ Revisar materiais aprovados no trello&#10;☑️ Programar stories até o fim do mês&#10;☑️ Organizar atividades no Jira&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="copyMessage(this)">
+          📋 APENAS COPIAR TEXTO
+        </button>
+
+        <button class="copy-button btn-dark btn-marcar" onclick="marcarEnviado(this)">
+          ✅ MARCAR COMO ENVIADO
+        </button>
+
+        <button class="copy-button btn-dark btn-reenviar" style="display:none;" onclick="enviarNovamente(this)">
+          🔄 ENVIAR NOVAMENTE
+        </button>
+
+        <div class="sent-info">
+          ✅ Último envio: <span class="sent-date"></span>
+          <div style="margin-top:6px;">🧾 Enviado nesta execução: <span class="sent-run"></span></div>
+        </div>
+        
+      <div class="todo" data-client="cervejaria_alquimistas__alquimistas_&amp;_resultate">
+        <h4>Checklist (item por item)</h4>
+        <label class="todo-item">  <input type="checkbox" data-item="6643d986" onchange="toggleItem(this)">  <div class="todo-text" data-text="6643d986">Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?</div></label><label class="todo-item">  <input type="checkbox" data-item="184b8354" onchange="toggleItem(this)">  <div class="todo-text" data-text="184b8354">Revisar materiais aprovados no trello</div></label><label class="todo-item">  <input type="checkbox" data-item="4264ecc1" onchange="toggleItem(this)">  <div class="todo-text" data-text="4264ecc1">Programar stories até o fim do mês</div></label><label class="todo-item">  <input type="checkbox" data-item="75463888" onchange="toggleItem(this)">  <div class="todo-text" data-text="75463888">Organizar atividades no Jira</div></label>
+        <div class="todo-actions">
+          <button class="mini" onclick="marcarTodos('cervejaria_alquimistas__alquimistas_&amp;_resultate')">Marcar todos</button>
+          <button class="mini" onclick="limparTodos('cervejaria_alquimistas__alquimistas_&amp;_resultate')">Limpar</button>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="message-card" data-key="farmácia_mônica__farmácia_mônica_&amp;_resultate" data-nome="FARMÁCIA MÔNICA" data-grupo="Farmácia Mônica &amp; Resultate" data-id="">
+      <div class="client-name">FARMÁCIA MÔNICA</div>
+      <span class="pill status-ok">✅ OK</span>
+      <div class="group-name">📱 Farmácia Mônica &amp; Resultate</div>
+      <span class="pill message-type">Mensagem com Pendências</span>
+
+      <div class="message-preview">
+        <div class="message-content">Olá, TIME FARMÁCIA MÔNICA! Boa tarde! 😊
+
+Como vão?
+
+Espero que tenham uma ótima semana!
+
+Passando para deixar nossos alinhamentos da semana:
+
+☑️ Solicitações no WhatsApp - criair atividades
+☑️ Organizar cronogrmas
+
+Qualquer dúvida ou informação, só me chamar.
+
+Vamos juntos! 🚀</div>
+
+        <button class="copy-button btn-wpp" data-msg="Olá, TIME FARMÁCIA MÔNICA! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Solicitações no WhatsApp - criair atividades&#10;☑️ Organizar cronogrmas&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="enviarWhatsapp(this)">
+          📱 ENVIAR DIRETO NO WHATSAPP
+        </button>
+
+        <button class="copy-button" data-msg="Olá, TIME FARMÁCIA MÔNICA! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Solicitações no WhatsApp - criair atividades&#10;☑️ Organizar cronogrmas&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="copyMessage(this)">
+          📋 APENAS COPIAR TEXTO
+        </button>
+
+        <button class="copy-button btn-dark btn-marcar" onclick="marcarEnviado(this)">
+          ✅ MARCAR COMO ENVIADO
+        </button>
+
+        <button class="copy-button btn-dark btn-reenviar" style="display:none;" onclick="enviarNovamente(this)">
+          🔄 ENVIAR NOVAMENTE
+        </button>
+
+        <div class="sent-info">
+          ✅ Último envio: <span class="sent-date"></span>
+          <div style="margin-top:6px;">🧾 Enviado nesta execução: <span class="sent-run"></span></div>
+        </div>
+        
+      <div class="todo" data-client="farmácia_mônica__farmácia_mônica_&amp;_resultate">
+        <h4>Checklist (item por item)</h4>
+        <label class="todo-item">  <input type="checkbox" data-item="fe6411dc" onchange="toggleItem(this)">  <div class="todo-text" data-text="fe6411dc">Solicitações no WhatsApp - criair atividades</div></label><label class="todo-item">  <input type="checkbox" data-item="2be1e735" onchange="toggleItem(this)">  <div class="todo-text" data-text="2be1e735">Organizar cronogrmas</div></label>
+        <div class="todo-actions">
+          <button class="mini" onclick="marcarTodos('farmácia_mônica__farmácia_mônica_&amp;_resultate')">Marcar todos</button>
+          <button class="mini" onclick="limparTodos('farmácia_mônica__farmácia_mônica_&amp;_resultate')">Limpar</button>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="message-card" data-key="gabriella__onlygabi" data-nome="GABRIELLA" data-grupo="onlygabi" data-id="">
+      <div class="client-name">GABRIELLA</div>
+      <span class="pill status-ok">✅ OK</span>
+      <div class="group-name">📱 onlygabi</div>
+      <span class="pill message-type">Mensagem com Pendências</span>
+
+      <div class="message-preview">
+        <div class="message-content">Olá, TIME GABRIELLA! Boa tarde! 😊
+
+Como vão?
+
+Espero que tenham uma ótima semana!
+
+Passando para deixar nossos alinhamentos da semana:
+
+☑️ PROJETOS RESULTATE
+☑️ Automação de Relatórios
+☑️ Jira x Trello -
+☑️ Copys
+☑️ PROJETOS BEM ME QUER
+☑️ Continuar automação de processos e relatórios internos
+
+Qualquer dúvida ou informação, só me chamar.
+
+Vamos juntos! 🚀</div>
+
+        <button class="copy-button btn-wpp" data-msg="Olá, TIME GABRIELLA! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ PROJETOS RESULTATE&#10;☑️ Automação de Relatórios&#10;☑️ Jira x Trello -&#10;☑️ Copys&#10;☑️ PROJETOS BEM ME QUER&#10;☑️ Continuar automação de processos e relatórios internos&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="enviarWhatsapp(this)">
+          📱 ENVIAR DIRETO NO WHATSAPP
+        </button>
+
+        <button class="copy-button" data-msg="Olá, TIME GABRIELLA! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ PROJETOS RESULTATE&#10;☑️ Automação de Relatórios&#10;☑️ Jira x Trello -&#10;☑️ Copys&#10;☑️ PROJETOS BEM ME QUER&#10;☑️ Continuar automação de processos e relatórios internos&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="copyMessage(this)">
+          📋 APENAS COPIAR TEXTO
+        </button>
+
+        <button class="copy-button btn-dark btn-marcar" onclick="marcarEnviado(this)">
+          ✅ MARCAR COMO ENVIADO
+        </button>
+
+        <button class="copy-button btn-dark btn-reenviar" style="display:none;" onclick="enviarNovamente(this)">
+          🔄 ENVIAR NOVAMENTE
+        </button>
+
+        <div class="sent-info">
+          ✅ Último envio: <span class="sent-date"></span>
+          <div style="margin-top:6px;">🧾 Enviado nesta execução: <span class="sent-run"></span></div>
+        </div>
+        
+      <div class="todo" data-client="gabriella__onlygabi">
+        <h4>Checklist (item por item)</h4>
+        <label class="todo-item">  <input type="checkbox" data-item="4f6585a9" onchange="toggleItem(this)">  <div class="todo-text" data-text="4f6585a9">PROJETOS RESULTATE</div></label><label class="todo-item">  <input type="checkbox" data-item="68a3cd9a" onchange="toggleItem(this)">  <div class="todo-text" data-text="68a3cd9a">Automação de Relatórios</div></label><label class="todo-item">  <input type="checkbox" data-item="ac8ca1b8" onchange="toggleItem(this)">  <div class="todo-text" data-text="ac8ca1b8">Jira x Trello -</div></label><label class="todo-item">  <input type="checkbox" data-item="8245fa6d" onchange="toggleItem(this)">  <div class="todo-text" data-text="8245fa6d">Copys</div></label><label class="todo-item">  <input type="checkbox" data-item="389abb94" onchange="toggleItem(this)">  <div class="todo-text" data-text="389abb94">PROJETOS BEM ME QUER</div></label><label class="todo-item">  <input type="checkbox" data-item="156f2424" onchange="toggleItem(this)">  <div class="todo-text" data-text="156f2424">Continuar automação de processos e relatórios internos</div></label>
+        <div class="todo-actions">
+          <button class="mini" onclick="marcarTodos('gabriella__onlygabi')">Marcar todos</button>
+          <button class="mini" onclick="limparTodos('gabriella__onlygabi')">Limpar</button>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="message-card" data-key="grupo_vila_porto__grupo_vila_porto_&amp;_resultate_[_agenciamento_e_site]" data-nome="GRUPO VILA PORTO" data-grupo="Grupo Vila Porto &amp; Resultate [ Agenciamento e Site]" data-id="">
+      <div class="client-name">GRUPO VILA PORTO</div>
+      <span class="pill status-ok">✅ OK</span>
+      <div class="group-name">📱 Grupo Vila Porto &amp; Resultate [ Agenciamento e Site]</div>
+      <span class="pill message-type">Mensagem com Pendências</span>
+
+      <div class="message-preview">
+        <div class="message-content">Olá, TIME GRUPO VILA PORTO! Boa tarde! 😊
+
+Como vão?
+
+Espero que tenham uma ótima semana!
+
+Passando para deixar nossos alinhamentos da semana:
+
+☑️ Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?
+☑️ Confirmar duas reuniões essa semana: 1º Reunião para definição dos temas dos ebooks (Hoje, às 10h30 e a 2º é o lainhemtno de Performance, Amanhã, terça, às 14h
+☑️ Captação com a Anna - Vídeos de FEV (data definida: 03/03 às 14h) - mapear roteiros e detalhes de gravação
+
+Qualquer dúvida ou informação, só me chamar.
+
+Vamos juntos! 🚀</div>
+
+        <button class="copy-button btn-wpp" data-msg="Olá, TIME GRUPO VILA PORTO! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?&#10;☑️ Confirmar duas reuniões essa semana: 1º Reunião para definição dos temas dos ebooks (Hoje, às 10h30 e a 2º é o lainhemtno de Performance, Amanhã, terça, às 14h&#10;☑️ Captação com a Anna - Vídeos de FEV (data definida: 03/03 às 14h) - mapear roteiros e detalhes de gravação&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="enviarWhatsapp(this)">
+          📱 ENVIAR DIRETO NO WHATSAPP
+        </button>
+
+        <button class="copy-button" data-msg="Olá, TIME GRUPO VILA PORTO! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?&#10;☑️ Confirmar duas reuniões essa semana: 1º Reunião para definição dos temas dos ebooks (Hoje, às 10h30 e a 2º é o lainhemtno de Performance, Amanhã, terça, às 14h&#10;☑️ Captação com a Anna - Vídeos de FEV (data definida: 03/03 às 14h) - mapear roteiros e detalhes de gravação&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="copyMessage(this)">
+          📋 APENAS COPIAR TEXTO
+        </button>
+
+        <button class="copy-button btn-dark btn-marcar" onclick="marcarEnviado(this)">
+          ✅ MARCAR COMO ENVIADO
+        </button>
+
+        <button class="copy-button btn-dark btn-reenviar" style="display:none;" onclick="enviarNovamente(this)">
+          🔄 ENVIAR NOVAMENTE
+        </button>
+
+        <div class="sent-info">
+          ✅ Último envio: <span class="sent-date"></span>
+          <div style="margin-top:6px;">🧾 Enviado nesta execução: <span class="sent-run"></span></div>
+        </div>
+        
+      <div class="todo" data-client="grupo_vila_porto__grupo_vila_porto_&amp;_resultate_[_agenciamento_e_site]">
+        <h4>Checklist (item por item)</h4>
+        <label class="todo-item">  <input type="checkbox" data-item="6643d986" onchange="toggleItem(this)">  <div class="todo-text" data-text="6643d986">Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?</div></label><label class="todo-item">  <input type="checkbox" data-item="308f56a5" onchange="toggleItem(this)">  <div class="todo-text" data-text="308f56a5">Confirmar duas reuniões essa semana: 1º Reunião para definição dos temas dos ebooks (Hoje, às 10h30 e a 2º é o lainhemtno de Performance, Amanhã, terça, às 14h.</div></label><label class="todo-item">  <input type="checkbox" data-item="8ebc776d" onchange="toggleItem(this)">  <div class="todo-text" data-text="8ebc776d">Captação com a Anna - Vídeos de FEV (data definida: 03/03 às 14h) - mapear roteiros e detalhes de gravação</div></label>
+        <div class="todo-actions">
+          <button class="mini" onclick="marcarTodos('grupo_vila_porto__grupo_vila_porto_&amp;_resultate_[_agenciamento_e_site]')">Marcar todos</button>
+          <button class="mini" onclick="limparTodos('grupo_vila_porto__grupo_vila_porto_&amp;_resultate_[_agenciamento_e_site]')">Limpar</button>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="message-card" data-key="inflow__iᴎflow_&amp;_resultate" data-nome="INFLOW" data-grupo="Iᴎflow &amp; Resultate" data-id="">
+      <div class="client-name">INFLOW</div>
+      <span class="pill status-ok">✅ OK</span>
+      <div class="group-name">📱 Iᴎflow &amp; Resultate</div>
+      <span class="pill message-type">Mensagem com Pendências</span>
+
+      <div class="message-preview">
+        <div class="message-content">Olá, TIME INFLOW! Boa tarde! 😊
+
+Como vão?
+
+Espero que tenham uma ótima semana!
+
+Passando para deixar nossos alinhamentos da semana:
+
+☑️ Marca: Garden - aguardando retorno do Gustavo
+☑️ Caixa da inflow kids - Aguardando retorno da Cintia - reunião meio caótica
+☑️ Apresentação Tipografia Apoio - InFlow (Online): Sexta-feira, 6 de março⋅10:00
+
+Qualquer dúvida ou informação, só me chamar.
+
+Vamos juntos! 🚀</div>
+
+        <button class="copy-button btn-wpp" data-msg="Olá, TIME INFLOW! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Marca: Garden - aguardando retorno do Gustavo&#10;☑️ Caixa da inflow kids - Aguardando retorno da Cintia - reunião meio caótica&#10;☑️ Apresentação Tipografia Apoio - InFlow (Online): Sexta-feira, 6 de março⋅10:00&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="enviarWhatsapp(this)">
+          📱 ENVIAR DIRETO NO WHATSAPP
+        </button>
+
+        <button class="copy-button" data-msg="Olá, TIME INFLOW! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Marca: Garden - aguardando retorno do Gustavo&#10;☑️ Caixa da inflow kids - Aguardando retorno da Cintia - reunião meio caótica&#10;☑️ Apresentação Tipografia Apoio - InFlow (Online): Sexta-feira, 6 de março⋅10:00&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="copyMessage(this)">
+          📋 APENAS COPIAR TEXTO
+        </button>
+
+        <button class="copy-button btn-dark btn-marcar" onclick="marcarEnviado(this)">
+          ✅ MARCAR COMO ENVIADO
+        </button>
+
+        <button class="copy-button btn-dark btn-reenviar" style="display:none;" onclick="enviarNovamente(this)">
+          🔄 ENVIAR NOVAMENTE
+        </button>
+
+        <div class="sent-info">
+          ✅ Último envio: <span class="sent-date"></span>
+          <div style="margin-top:6px;">🧾 Enviado nesta execução: <span class="sent-run"></span></div>
+        </div>
+        
+      <div class="todo" data-client="inflow__iᴎflow_&amp;_resultate">
+        <h4>Checklist (item por item)</h4>
+        <label class="todo-item">  <input type="checkbox" data-item="f4d62cf8" onchange="toggleItem(this)">  <div class="todo-text" data-text="f4d62cf8">Marca: Garden - aguardando retorno do Gustavo</div></label><label class="todo-item">  <input type="checkbox" data-item="e3cac34a" onchange="toggleItem(this)">  <div class="todo-text" data-text="e3cac34a">Caixa da inflow kids - Aguardando retorno da Cintia - reunião meio caótica</div></label><label class="todo-item">  <input type="checkbox" data-item="7813d5ff" onchange="toggleItem(this)">  <div class="todo-text" data-text="7813d5ff">Apresentação Tipografia Apoio - InFlow (Online): Sexta-feira, 6 de março⋅10:00</div></label>
+        <div class="todo-actions">
+          <button class="mini" onclick="marcarTodos('inflow__iᴎflow_&amp;_resultate')">Marcar todos</button>
+          <button class="mini" onclick="limparTodos('inflow__iᴎflow_&amp;_resultate')">Limpar</button>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="message-card" data-key="maratona_de_vitória__maratona_vix_&amp;_resultate" data-nome="MARATONA DE VITÓRIA" data-grupo="Maratona Vix &amp; Resultate" data-id="">
+      <div class="client-name">MARATONA DE VITÓRIA</div>
+      <span class="pill status-ok">✅ OK</span>
+      <div class="group-name">📱 Maratona Vix &amp; Resultate</div>
+      <span class="pill message-type">Mensagem com Pendências</span>
+
+      <div class="message-preview">
+        <div class="message-content">Olá, TIME MARATONA DE VITÓRIA! Boa tarde! 😊
+
+Como vão?
+
+Espero que tenham uma ótima semana!
+
+Passando para deixar nossos alinhamentos da semana:
+
+☑️ Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?
+☑️ Cronograma março: aprovado - liberar para operações
+☑️ PROJETOS NOVOS:
+☑️ Penedinho
+☑️ Automação - Projeto N8N com eles - de forma gratuita
+☑️ Iniciar o projeto de “profissionais” como influenciadores - (definir formulário para iniciar) - forms no domínio da resul
+☑️ Em standby - aguarando impressão teste: Planejamento do lançamento de medalha como  “evento” -
+
+Qualquer dúvida ou informação, só me chamar.
+
+Vamos juntos! 🚀</div>
+
+        <button class="copy-button btn-wpp" data-msg="Olá, TIME MARATONA DE VITÓRIA! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?&#10;☑️ Cronograma março: aprovado - liberar para operações&#10;☑️ PROJETOS NOVOS:&#10;☑️ Penedinho&#10;☑️ Automação - Projeto N8N com eles - de forma gratuita&#10;☑️ Iniciar o projeto de “profissionais” como influenciadores - (definir formulário para iniciar) - forms no domínio da resul&#10;☑️ Em standby - aguarando impressão teste: Planejamento do lançamento de medalha como  “evento” -&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="enviarWhatsapp(this)">
+          📱 ENVIAR DIRETO NO WHATSAPP
+        </button>
+
+        <button class="copy-button" data-msg="Olá, TIME MARATONA DE VITÓRIA! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?&#10;☑️ Cronograma março: aprovado - liberar para operações&#10;☑️ PROJETOS NOVOS:&#10;☑️ Penedinho&#10;☑️ Automação - Projeto N8N com eles - de forma gratuita&#10;☑️ Iniciar o projeto de “profissionais” como influenciadores - (definir formulário para iniciar) - forms no domínio da resul&#10;☑️ Em standby - aguarando impressão teste: Planejamento do lançamento de medalha como  “evento” -&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="copyMessage(this)">
+          📋 APENAS COPIAR TEXTO
+        </button>
+
+        <button class="copy-button btn-dark btn-marcar" onclick="marcarEnviado(this)">
+          ✅ MARCAR COMO ENVIADO
+        </button>
+
+        <button class="copy-button btn-dark btn-reenviar" style="display:none;" onclick="enviarNovamente(this)">
+          🔄 ENVIAR NOVAMENTE
+        </button>
+
+        <div class="sent-info">
+          ✅ Último envio: <span class="sent-date"></span>
+          <div style="margin-top:6px;">🧾 Enviado nesta execução: <span class="sent-run"></span></div>
+        </div>
+        
+      <div class="todo" data-client="maratona_de_vitória__maratona_vix_&amp;_resultate">
+        <h4>Checklist (item por item)</h4>
+        <label class="todo-item">  <input type="checkbox" data-item="6643d986" onchange="toggleItem(this)">  <div class="todo-text" data-text="6643d986">Estamos montando o cronograma de abril. Tem alguma prioridade/tema importante para incluir?</div></label><label class="todo-item">  <input type="checkbox" data-item="f73e5147" onchange="toggleItem(this)">  <div class="todo-text" data-text="f73e5147">Cronograma março: aprovado - liberar para operações</div></label><label class="todo-item">  <input type="checkbox" data-item="409d8ed2" onchange="toggleItem(this)">  <div class="todo-text" data-text="409d8ed2">PROJETOS NOVOS:</div></label><label class="todo-item">  <input type="checkbox" data-item="9a25235d" onchange="toggleItem(this)">  <div class="todo-text" data-text="9a25235d">Penedinho</div></label><label class="todo-item">  <input type="checkbox" data-item="6f129d7b" onchange="toggleItem(this)">  <div class="todo-text" data-text="6f129d7b">Automação - Projeto N8N com eles - de forma gratuita</div></label><label class="todo-item">  <input type="checkbox" data-item="edebee09" onchange="toggleItem(this)">  <div class="todo-text" data-text="edebee09">Iniciar o projeto de “profissionais” como influenciadores - (definir formulário para iniciar) - forms no domínio da resul</div></label><label class="todo-item">  <input type="checkbox" data-item="a10ec654" onchange="toggleItem(this)">  <div class="todo-text" data-text="a10ec654">Em standby - aguarando impressão teste: Planejamento do lançamento de medalha como  “evento” -</div></label>
+        <div class="todo-actions">
+          <button class="mini" onclick="marcarTodos('maratona_de_vitória__maratona_vix_&amp;_resultate')">Marcar todos</button>
+          <button class="mini" onclick="limparTodos('maratona_de_vitória__maratona_vix_&amp;_resultate')">Limpar</button>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="message-card" data-key="nutriage__nutriage_&amp;_resultate" data-nome="NUTRIAGE" data-grupo="Nutriage &amp; Resultate" data-id="">
+      <div class="client-name">NUTRIAGE</div>
+      <span class="pill status-ok">✅ OK</span>
+      <div class="group-name">📱 Nutriage &amp; Resultate</div>
+      <span class="pill message-type">Mensagem com Pendências</span>
+
+      <div class="message-preview">
+        <div class="message-content">Olá, TIME NUTRIAGE! Boa tarde! 😊
+
+Como vão?
+
+Espero que tenham uma ótima semana!
+
+Passando para deixar nossos alinhamentos da semana:
+
+☑️ Cronograma abril: Iniciado https://docs.google.com/document/d/10WelX_8CcDe_YxmHlKTfY4PGfMOlPOvGekKh9gmWO8I/edit?usp=sharing
+☑️ Marcar sobre rótulos - com Dr Moacir e João (confirmar com o João)
+☑️ Organizar disparos da Semana e verificar se algum está com o como térmico como brinde, se sim, retirar o copo da criação
+☑️ Layout novo no site - João enviará todos os ajustes necessários em cima do link/material que Tomir enviou
+
+Qualquer dúvida ou informação, só me chamar.
+
+Vamos juntos! 🚀</div>
+
+        <button class="copy-button btn-wpp" data-msg="Olá, TIME NUTRIAGE! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Cronograma abril: Iniciado https://docs.google.com/document/d/10WelX_8CcDe_YxmHlKTfY4PGfMOlPOvGekKh9gmWO8I/edit?usp=sharing&#10;☑️ Marcar sobre rótulos - com Dr Moacir e João (confirmar com o João)&#10;☑️ Organizar disparos da Semana e verificar se algum está com o como térmico como brinde, se sim, retirar o copo da criação&#10;☑️ Layout novo no site - João enviará todos os ajustes necessários em cima do link/material que Tomir enviou&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="enviarWhatsapp(this)">
+          📱 ENVIAR DIRETO NO WHATSAPP
+        </button>
+
+        <button class="copy-button" data-msg="Olá, TIME NUTRIAGE! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Cronograma abril: Iniciado https://docs.google.com/document/d/10WelX_8CcDe_YxmHlKTfY4PGfMOlPOvGekKh9gmWO8I/edit?usp=sharing&#10;☑️ Marcar sobre rótulos - com Dr Moacir e João (confirmar com o João)&#10;☑️ Organizar disparos da Semana e verificar se algum está com o como térmico como brinde, se sim, retirar o copo da criação&#10;☑️ Layout novo no site - João enviará todos os ajustes necessários em cima do link/material que Tomir enviou&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="copyMessage(this)">
+          📋 APENAS COPIAR TEXTO
+        </button>
+
+        <button class="copy-button btn-dark btn-marcar" onclick="marcarEnviado(this)">
+          ✅ MARCAR COMO ENVIADO
+        </button>
+
+        <button class="copy-button btn-dark btn-reenviar" style="display:none;" onclick="enviarNovamente(this)">
+          🔄 ENVIAR NOVAMENTE
+        </button>
+
+        <div class="sent-info">
+          ✅ Último envio: <span class="sent-date"></span>
+          <div style="margin-top:6px;">🧾 Enviado nesta execução: <span class="sent-run"></span></div>
+        </div>
+        
+      <div class="todo" data-client="nutriage__nutriage_&amp;_resultate">
+        <h4>Checklist (item por item)</h4>
+        <label class="todo-item">  <input type="checkbox" data-item="e073c0a1" onchange="toggleItem(this)">  <div class="todo-text" data-text="e073c0a1">Cronograma abril: Iniciado https://docs.google.com/document/d/10WelX_8CcDe_YxmHlKTfY4PGfMOlPOvGekKh9gmWO8I/edit?usp=sharing</div></label><label class="todo-item">  <input type="checkbox" data-item="d6e6daab" onchange="toggleItem(this)">  <div class="todo-text" data-text="d6e6daab">Marcar sobre rótulos - com Dr Moacir e João (confirmar com o João)</div></label><label class="todo-item">  <input type="checkbox" data-item="7e500af3" onchange="toggleItem(this)">  <div class="todo-text" data-text="7e500af3">Organizar disparos da Semana e verificar se algum está com o como térmico como brinde, se sim, retirar o copo da criação.</div></label><label class="todo-item">  <input type="checkbox" data-item="32186b0e" onchange="toggleItem(this)">  <div class="todo-text" data-text="32186b0e">Layout novo no site - João enviará todos os ajustes necessários em cima do link/material que Tomir enviou</div></label>
+        <div class="todo-actions">
+          <button class="mini" onclick="marcarTodos('nutriage__nutriage_&amp;_resultate')">Marcar todos</button>
+          <button class="mini" onclick="limparTodos('nutriage__nutriage_&amp;_resultate')">Limpar</button>
+        </div>
+      </div>
+      </div>
+    </div>
+    <div class="message-card" data-key="rbr__resultate_e_rbr" data-nome="RBR" data-grupo="Resultate e RBR" data-id="">
+      <div class="client-name">RBR</div>
+      <span class="pill status-ok">✅ OK</span>
+      <div class="group-name">📱 Resultate e RBR</div>
+      <span class="pill message-type-simple">Mensagem Simples</span>
+
+      <div class="message-preview">
+        <div class="message-content">Olá, TIME RBR! Boa tarde! 😊
+
+Como vão?
+
+Passando para desejar uma ótima semana e verificar se precisam de algo.
+
+Estamos à disposição.
+
+Vamos juntos! 🚀</div>
+
+        <button class="copy-button btn-wpp" data-msg="Olá, TIME RBR! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Passando para desejar uma ótima semana e verificar se precisam de algo.&#10;&#10;Estamos à disposição.&#10;&#10;Vamos juntos! 🚀" onclick="enviarWhatsapp(this)">
+          📱 ENVIAR DIRETO NO WHATSAPP
+        </button>
+
+        <button class="copy-button" data-msg="Olá, TIME RBR! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Passando para desejar uma ótima semana e verificar se precisam de algo.&#10;&#10;Estamos à disposição.&#10;&#10;Vamos juntos! 🚀" onclick="copyMessage(this)">
+          📋 APENAS COPIAR TEXTO
+        </button>
+
+        <button class="copy-button btn-dark btn-marcar" onclick="marcarEnviado(this)">
+          ✅ MARCAR COMO ENVIADO
+        </button>
+
+        <button class="copy-button btn-dark btn-reenviar" style="display:none;" onclick="enviarNovamente(this)">
+          🔄 ENVIAR NOVAMENTE
+        </button>
+
+        <div class="sent-info">
+          ✅ Último envio: <span class="sent-date"></span>
+          <div style="margin-top:6px;">🧾 Enviado nesta execução: <span class="sent-run"></span></div>
+        </div>
+        
+      </div>
+    </div>
+    <div class="message-card" data-key="victor_firmino__obs:_não_tem_grupo_ainda,_enviar_no_privado" data-nome="VICTOR FIRMINO" data-grupo="Obs: não tem grupo ainda, enviar no privado" data-id="">
+      <div class="client-name">VICTOR FIRMINO</div>
+      <span class="pill status-ok">✅ OK</span>
+      <div class="group-name">📱 Obs: não tem grupo ainda, enviar no privado</div>
+      <span class="pill message-type">Mensagem com Pendências</span>
+
+      <div class="message-preview">
+        <div class="message-content">Olá, TIME VICTOR FIRMINO! Boa tarde! 😊
+
+Como vão?
+
+Espero que tenham uma ótima semana!
+
+Passando para deixar nossos alinhamentos da semana:
+
+☑️ Projeto novo - marcar apresentação da marca
+☑️ Criar um grupo no wpp?
+☑️ Confirmar com o Hugo o andamento do projeto
+
+Qualquer dúvida ou informação, só me chamar.
+
+Vamos juntos! 🚀</div>
+
+        <button class="copy-button btn-wpp" data-msg="Olá, TIME VICTOR FIRMINO! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Projeto novo - marcar apresentação da marca&#10;☑️ Criar um grupo no wpp?&#10;☑️ Confirmar com o Hugo o andamento do projeto&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="enviarWhatsapp(this)">
+          📱 ENVIAR DIRETO NO WHATSAPP
+        </button>
+
+        <button class="copy-button" data-msg="Olá, TIME VICTOR FIRMINO! Boa tarde! 😊&#10;&#10;Como vão?&#10;&#10;Espero que tenham uma ótima semana!&#10;&#10;Passando para deixar nossos alinhamentos da semana:&#10;&#10;☑️ Projeto novo - marcar apresentação da marca&#10;☑️ Criar um grupo no wpp?&#10;☑️ Confirmar com o Hugo o andamento do projeto&#10;&#10;Qualquer dúvida ou informação, só me chamar.&#10;&#10;Vamos juntos! 🚀" onclick="copyMessage(this)">
+          📋 APENAS COPIAR TEXTO
+        </button>
+
+        <button class="copy-button btn-dark btn-marcar" onclick="marcarEnviado(this)">
+          ✅ MARCAR COMO ENVIADO
+        </button>
+
+        <button class="copy-button btn-dark btn-reenviar" style="display:none;" onclick="enviarNovamente(this)">
+          🔄 ENVIAR NOVAMENTE
+        </button>
+
+        <div class="sent-info">
+          ✅ Último envio: <span class="sent-date"></span>
+          <div style="margin-top:6px;">🧾 Enviado nesta execução: <span class="sent-run"></span></div>
+        </div>
+        
+      <div class="todo" data-client="victor_firmino__obs:_não_tem_grupo_ainda,_enviar_no_privado">
+        <h4>Checklist (item por item)</h4>
+        <label class="todo-item">  <input type="checkbox" data-item="3a59cc78" onchange="toggleItem(this)">  <div class="todo-text" data-text="3a59cc78">Projeto novo - marcar apresentação da marca</div></label><label class="todo-item">  <input type="checkbox" data-item="fb7fed36" onchange="toggleItem(this)">  <div class="todo-text" data-text="fb7fed36">Criar um grupo no wpp?</div></label><label class="todo-item">  <input type="checkbox" data-item="b8d2a9f3" onchange="toggleItem(this)">  <div class="todo-text" data-text="b8d2a9f3">Confirmar com o Hugo o andamento do projeto</div></label>
+        <div class="todo-actions">
+          <button class="mini" onclick="marcarTodos('victor_firmino__obs:_não_tem_grupo_ainda,_enviar_no_privado')">Marcar todos</button>
+          <button class="mini" onclick="limparTodos('victor_firmino__obs:_não_tem_grupo_ainda,_enviar_no_privado')">Limpar</button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    const RUN_HASH = "3096f0de4a08d5e556cea497d020610e";
+    const API_URL = "https://script.google.com/a/macros/resultate.com.br/s/AKfycbzTURe7wE_DQ4XPRiGeM44yA06srf87Ovrbxrh8ReHe9zxBaY-VjbzxEukyot821AOg/exec";
+    const API_TOKEN = "Resultate@2026_";
+
+    async function postToSheet(payload) {
+      try {
+        await fetch(API_URL, {
+          method: "POST", mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+          body: JSON.stringify({ token: API_TOKEN, ...payload })
+        });
+        return true;
+      } catch (e) { console.error(e); return false; }
+    }
+
+    function storageKeyClient(key) { return "cliente_state_" + key; }
+    function storageKeyChecklist(key) { return "checklist_" + key; }
+
+    function getClientState(key) {
+      try { return JSON.parse(localStorage.getItem(storageKeyClient(key))) || { history: [] }; } 
+      catch (e) { return { history: [] }; }
+    }
+    function setClientState(key, state) { localStorage.setItem(storageKeyClient(key), JSON.stringify(state)); }
+
+    function enviarWhatsapp(button) {
+      const text = button.getAttribute("data-msg");
+      const url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+      window.open(url, "_blank");
+    }
+
+    function copyMessage(button) {
+      const text = button.getAttribute("data-msg");
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = button.innerHTML;
+        button.innerHTML = "✅ COPIADO!";
+        button.classList.add("copied");
+        setTimeout(() => { button.innerHTML = originalText; button.classList.remove("copied"); }, 2000);
+      });
+    }
+
+    function atualizarProgresso() {
+      const cards = document.querySelectorAll(".message-card");
+      const total = cards.length;
+      let concluidos = 0;
+
+      cards.forEach(card => {
+        const key = card.getAttribute("data-key");
+        const state = getClientState(key);
+        if (state.lastRun === RUN_HASH && state.sentThisRunAt) {
+          concluidos++;
+        }
+      });
+
+      document.getElementById("prog-total").innerText = total;
+      document.getElementById("prog-count").innerText = concluidos;
+
+      const porcentagem = total === 0 ? 0 : Math.round((concluidos / total) * 100);
+      document.getElementById("prog-bar").style.width = porcentagem + "%";
+    }
+
+    function renderSentState(card, state) {
+      const info = card.querySelector(".sent-info");
+      const spanDate = card.querySelector(".sent-date");
+      const spanRun = card.querySelector(".sent-run");
+      const btnEnviar = card.querySelector(".btn-marcar");
+      const btnReenviar = card.querySelector(".btn-reenviar");
+
+      if (state.lastSent) { info.style.display = "block"; spanDate.textContent = state.lastSent; } 
+      else { info.style.display = "none"; }
+
+      if (state.lastRun === RUN_HASH && state.sentThisRunAt) {
+        spanRun.textContent = state.sentThisRunAt;
+        btnEnviar.innerHTML = "✅ ENVIADO (NESTA EXECUÇÃO)";
+        btnEnviar.disabled = true; btnEnviar.style.opacity = "0.85";
+        btnReenviar.style.display = "block";
+      } else {
+        spanRun.textContent = "—";
+        btnEnviar.innerHTML = "✅ MARCAR COMO ENVIADO";
+        btnEnviar.disabled = false; btnEnviar.style.opacity = "1";
+        btnReenviar.style.display = "none";
+      }
+      atualizarProgresso();
+    }
+
+    async function marcarEnviado(button) {
+      const card = button.closest(".message-card");
+      const key = card.getAttribute("data-key");
+      const nome = card.getAttribute("data-nome") || "";
+      const grupo = card.getAttribute("data-grupo") || "";
+      const clienteId = card.getAttribute("data-id") || "";
+
+      const now = new Date();
+      const dia = String(now.getDate()).padStart(2, '0');
+      const mes = String(now.getMonth() + 1).padStart(2, '0');
+      const ano = now.getFullYear();
+      const horas = String(now.getHours()).padStart(2, '0');
+      const minutos = String(now.getMinutes()).padStart(2, '0');
+      const dataAmigavel = dia + "/" + mes + "/" + ano + " " + horas + ":" + minutos;
+      const when = now.toLocaleString("pt-BR");
+
+      const state = getClientState(key);
+      state.lastSent = when;
+      state.history = state.history || [];
+      state.history.push({ when, run: RUN_HASH });
+      state.lastRun = RUN_HASH;
+      state.sentThisRunAt = when;
+      setClientState(key, state);
+
+      await postToSheet({ action: "mark_sent", cliente_id: clienteId, nome: nome, grupo_whatsapp: grupo, sent_at: dataAmigavel });
+      renderSentState(card, state);
+    }
+
+    function enviarNovamente(button) {
+      const card = button.closest(".message-card");
+      const key = card.getAttribute("data-key");
+      const state = getClientState(key);
+      state.lastRun = ""; state.sentThisRunAt = "";
+      setClientState(key, state);
+      renderSentState(card, state);
+    }
+
+    function getChecklistState(clientKey) { try { return JSON.parse(localStorage.getItem(storageKeyChecklist(clientKey))) || {}; } catch (e) { return {}; } }
+    function setChecklistState(clientKey, obj) { localStorage.setItem(storageKeyChecklist(clientKey), JSON.stringify(obj)); }
+
+    async function saveChecklistToSheet(card) {
+      const key = card.getAttribute("data-key");
+      const clienteId = card.getAttribute("data-id") || "";
+      await postToSheet({ action: "save_checklist", cliente_id: clienteId, done: getChecklistState(key) });
+    }
+
+    async function toggleItem(checkbox) {
+      const card = checkbox.closest(".message-card");
+      const key = card.getAttribute("data-key");
+      const itemId = checkbox.getAttribute("data-item");
+      const state = getChecklistState(key);
+      state[itemId] = checkbox.checked;
+      setChecklistState(key, state);
+      const textEl = card.querySelector('.todo-text[data-text="' + itemId + '"]');
+      if (textEl) textEl.classList.toggle("done", checkbox.checked);
+      await saveChecklistToSheet(card);
+    }
+
+    async function marcarTodos(clientKey) {
+      const card = document.querySelector('.message-card[data-key="' + clientKey + '"]');
+      if (!card) return;
+      const state = getChecklistState(clientKey);
+      card.querySelectorAll('.todo input[type="checkbox"][data-item]').forEach(cb => {
+        cb.checked = true; state[cb.getAttribute("data-item")] = true;
+        const textEl = card.querySelector('.todo-text[data-text="' + cb.getAttribute("data-item") + '"]');
+        if (textEl) textEl.classList.add("done");
+      });
+      setChecklistState(clientKey, state);
+      await saveChecklistToSheet(card);
+    }
+
+    async function limparTodos(clientKey) {
+      const card = document.querySelector('.message-card[data-key="' + clientKey + '"]');
+      if (!card) return;
+      const state = getChecklistState(clientKey);
+      card.querySelectorAll('.todo input[type="checkbox"][data-item]').forEach(cb => {
+        cb.checked = false; state[cb.getAttribute("data-item")] = false;
+        const textEl = card.querySelector('.todo-text[data-text="' + cb.getAttribute("data-item") + '"]');
+        if (textEl) textEl.classList.remove("done");
+      });
+      setChecklistState(clientKey, state);
+      await saveChecklistToSheet(card);
+    }
+
+    function hydrateChecklist(card) {
+      const key = card.getAttribute("data-key");
+      const state = getChecklistState(key);
+      card.querySelectorAll('.todo input[type="checkbox"][data-item]').forEach(cb => {
+        const checked = !!state[cb.getAttribute("data-item")];
+        cb.checked = checked;
+        const textEl = card.querySelector('.todo-text[data-text="' + cb.getAttribute("data-item") + '"]');
+        if (textEl) textEl.classList.toggle("done", checked);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".message-card").forEach(card => {
+        const key = card.getAttribute("data-key");
+        renderSentState(card, getClientState(key));
+        hydrateChecklist(card);
+      });
+      atualizarProgresso();
+    });
+  </script>
+</body>
+</html>

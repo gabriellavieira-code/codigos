@@ -1,0 +1,274 @@
+================================================================================
+                    LEIA-ME - GERADOR DE MENSAGENS AUTOMÁTICAS
+================================================================================
+
+📱 SCRIPT: gerar_mensagens_grupos_CONFIGURADO.py
+🎯 FUNÇÃO: Gerar mensagens personalizadas para grupos do WhatsApp
+⏰ ECONOMIA: 1-2 horas por semana
+📅 USO: Toda segunda-feira de manhã
+
+
+================================================================================
+                              ANTES DE COMEÇAR
+================================================================================
+
+✅ REQUISITOS:
+
+1. Python instalado no computador
+   - Para verificar: abra o terminal/cmd e digite: python --version
+   - Se não tiver, baixe em: https://www.python.org/downloads/
+
+2. Biblioteca pandas instalada
+   - Para instalar: pip install pandas
+   - Ou: pip3 install pandas
+
+3. Planilha no Google Sheets configurada
+   - Link da SUA planilha: 
+     https://docs.google.com/spreadsheets/d/1oEHfYvcQiNMNgCW-N_RLZ1bRY7UjBSLrPDT8yCED5ZE/edit
+
+4. Internet ativa (o script lê a planilha online)
+
+
+================================================================================
+                           ESTRUTURA DA PLANILHA
+================================================================================
+
+A planilha DEVE ter 3 colunas na primeira linha:
+
+┌─────────────────┬─────────────────────┬──────────────────────────┐
+│ nome            │ grupo_whatsapp      │ pendencias               │
+├─────────────────┼─────────────────────┼──────────────────────────┤
+│ Tech Solutions  │ Grupo Tech          │ Liberar posts            │
+│                 │                     │ Revisar cronograma       │
+├─────────────────┼─────────────────────┼──────────────────────────┤
+│ Maria Oliveira  │ Grupo Maria         │ (vazio ou "alinhamento") │
+└─────────────────┴─────────────────────┴──────────────────────────┘
+
+IMPORTANTE:
+- Coluna A: Nome do cliente
+- Coluna B: Nome EXATO do grupo do WhatsApp
+- Coluna C: Pendências (ou vazio para mensagem simples)
+
+
+================================================================================
+                        TIPOS DE MENSAGEM AUTOMÁTICA
+================================================================================
+
+O script detecta automaticamente qual mensagem enviar:
+
+🟠 MENSAGEM SIMPLES (quando pendências está):
+   - Vazia (em branco)
+   - Com "Mensagem da semana - alinhamento"
+   - Só "alinhamento"
+   - Só "mensagem simples"
+
+   Exemplo de mensagem gerada:
+   "Olá! Bom dia! Passando para desejar uma ótima semana 
+    e verificar se precisam de algo. Estou à disposição!"
+
+🟢 MENSAGEM COM CHECKLIST (quando tem pendências específicas):
+   
+   Exemplo de mensagem gerada:
+   "Olá! Bom dia! Segue nossos alinhamentos:
+    ☑️ Liberar 5 posts
+    ☑️ Revisar cronograma
+    Qualquer dúvida, só me chamar!"
+
+
+================================================================================
+                            COMO USAR (PASSO A PASSO)
+================================================================================
+
+🗓️ SEXTA-FEIRA (5 minutos):
+   1. Abra sua planilha no Google Sheets
+   2. Atualize a coluna "pendencias" para cada cliente
+   3. Salva automaticamente!
+
+🌙 DOMINGO À NOITE (2 minutos):
+   1. Abra o terminal/prompt de comando
+   2. Navegue até a pasta onde está o script:
+      cd caminho/para/sua/pasta
+   3. Rode o script:
+      python gerar_mensagens_grupos_CONFIGURADO.py
+   4. Um arquivo HTML será criado (ex: mensagens_20260219_2100.html)
+
+☀️ SEGUNDA DE MANHÃ (2 minutos):
+   1. Abra o arquivo HTML gerado no navegador
+   2. Para cada cliente:
+      - Clique em "COPIAR MENSAGEM"
+      - Abra o grupo correspondente no WhatsApp
+      - Cole (Ctrl+V ou Cmd+V)
+      - Envie!
+   3. Pronto! 10-15 grupos em 2 minutos!
+
+
+================================================================================
+                             COMANDOS IMPORTANTES
+================================================================================
+
+INSTALAR PANDAS (primeira vez):
+   Windows: pip install pandas
+   Mac/Linux: pip3 install pandas
+
+RODAR O SCRIPT:
+   Windows: python gerar_mensagens_grupos_CONFIGURADO.py
+   Mac/Linux: python3 gerar_mensagens_grupos_CONFIGURADO.py
+
+VERIFICAR SE PYTHON ESTÁ INSTALADO:
+   python --version
+   ou
+   python3 --version
+
+
+================================================================================
+                           SOLUÇÃO DE PROBLEMAS
+================================================================================
+
+❌ ERRO: "No module named 'pandas'"
+   SOLUÇÃO: pip install pandas
+
+❌ ERRO: "python não é reconhecido como comando"
+   SOLUÇÃO: Python não está instalado ou não está no PATH
+            Reinstale o Python e marque "Add to PATH"
+
+❌ ERRO: "HTTP Error 403" ou problema ao carregar planilha
+   SOLUÇÃO: Verifique se a planilha está compartilhada como 
+            "Qualquer pessoa com o link"
+
+❌ ERRO: "File not found" ou "Arquivo não encontrado"
+   SOLUÇÃO: Você está na pasta errada. Use "cd" para navegar
+            até a pasta onde está o script
+
+❌ Script roda mas não gera arquivo
+   SOLUÇÃO: Verifique permissões da pasta ou rode como administrador
+
+❌ Planilha vazia ou sem dados
+   SOLUÇÃO: Certifique-se que:
+            - As colunas se chamam: nome, grupo_whatsapp, pendencias
+            - Tem dados preenchidos
+            - Está na primeira aba da planilha
+
+
+================================================================================
+                              DICAS IMPORTANTES
+================================================================================
+
+💡 ORGANIZE COM ABAS:
+   - Crie aba "Ativos" (o script lê essa)
+   - Crie aba "Pausados" (para clientes inativos)
+   - Sempre mantenha os ativos na primeira aba!
+
+💡 ATALHOS ÚTEIS:
+   - Alt+Enter no Sheets = Quebrar linha dentro da célula
+   - Ctrl+C / Ctrl+V = Copiar e colar
+   - F5 no navegador = Atualizar página HTML
+
+💡 WORKFLOW EFICIENTE:
+   - Deixe WhatsApp Web aberto em uma aba
+   - Deixe o HTML em outra aba
+   - Alterne entre abas com Alt+Tab (Windows) ou Cmd+Tab (Mac)
+
+💡 BACKUP:
+   - Sua planilha fica no Google Drive (backup automático)
+   - Mantenha uma cópia do script em local seguro
+
+💡 EDIÇÕES NA MENSAGEM:
+   - Se quiser mudar o texto das mensagens
+   - Edite as linhas 40-50 e 53-65 do script
+   - Salve e rode novamente
+
+
+================================================================================
+                            ARQUIVOS DO PROJETO
+================================================================================
+
+📄 gerar_mensagens_grupos_CONFIGURADO.py
+   - Script principal (JÁ CONFIGURADO com sua planilha)
+   - NÃO precisa editar nada!
+
+📄 LEIA-ME.txt
+   - Este arquivo
+
+📄 mensagens_YYYYMMDD_HHMM.html
+   - Arquivo HTML gerado toda vez que você roda o script
+   - Abre no navegador para copiar as mensagens
+   - Nome varia com data/hora (ex: mensagens_20260219_2100.html)
+
+
+================================================================================
+                              INFORMAÇÕES TÉCNICAS
+================================================================================
+
+ID DA SUA PLANILHA:
+   1oEHfYvcQiNMNgCW-N_RLZ1bRY7UjBSLrPDT8yCED5ZE
+
+LINK COMPLETO:
+   https://docs.google.com/spreadsheets/d/1oEHfYvcQiNMNgCW-N_RLZ1bRY7UjBSLrPDT8yCED5ZE/edit
+
+URL QUE O SCRIPT USA:
+   https://docs.google.com/spreadsheets/d/1oEHfYvcQiNMNgCW-N_RLZ1bRY7UjBSLrPDT8yCED5ZE/export?format=csv
+
+VERSÃO DO SCRIPT: 2.0
+CRIADO EM: 2026
+ÚLTIMA ATUALIZAÇÃO: Fevereiro 2026
+
+
+================================================================================
+                                  SUPORTE
+================================================================================
+
+Dúvidas? Problemas? Melhorias?
+
+1. Verifique a seção "SOLUÇÃO DE PROBLEMAS" acima
+2. Confira se seguiu todos os passos do "COMO USAR"
+3. Certifique-se que a planilha está no formato correto
+4. Verifique se tem internet ativa
+
+
+================================================================================
+                                CHECKLIST RÁPIDO
+================================================================================
+
+Antes de rodar pela PRIMEIRA VEZ:
+□ Python instalado?
+□ Pandas instalado? (pip install pandas)
+□ Planilha criada no Google Sheets?
+□ Planilha tem as 3 colunas corretas?
+□ Planilha está compartilhada como "Qualquer pessoa com o link"?
+□ Script está na pasta certa?
+
+Toda SEGUNDA-FEIRA:
+□ Planilha atualizada na sexta?
+□ Rodou o script domingo à noite?
+□ Arquivo HTML foi gerado?
+□ WhatsApp Web está aberto?
+□ Copiou e colou as mensagens nos grupos?
+
+
+================================================================================
+                              TEMPO ECONOMIZADO
+================================================================================
+
+ANTES (manual):
+   30-40 minutos toda segunda-feira
+   = 2-3 horas por mês
+   = 24-36 horas por ano
+
+AGORA (automatizado):
+   2 minutos toda segunda-feira
+   = 8 minutos por mês
+   = 1.6 horas por ano
+
+ECONOMIA:
+   ~34 horas por ano! 🎉
+   = 4 dias úteis de trabalho!
+
+
+================================================================================
+
+                            VOCÊ CONSEGUE! 💪
+                    
+              Qualquer dúvida, releia este arquivo.
+                Todo o processo está descrito aqui!
+
+================================================================================

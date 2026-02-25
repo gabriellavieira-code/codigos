@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem Me Quer — 📊 Relatório de Vendas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#F5F3EC; color:#324D38; padding:20px; min-height:100vh; }
+        .container { max-width:860px; margin:0 auto; }
+        .header { text-align:center; padding:35px 20px 30px; background:linear-gradient(135deg,#324D38,#4a6b52); border-radius:20px; margin-bottom:20px; position:relative; overflow:hidden; }
+        .header::before { content:''; position:absolute; top:-50%; right:-30%; width:400px; height:400px; background:radial-gradient(circle,rgba(199,207,158,0.15) 0%,transparent 70%); }
+        .logo { width:160px; height:auto; margin-bottom:15px; filter:brightness(0) invert(1); opacity:0.95; }
+        .logo-text { font-family:'Cormorant Garamond',serif; font-size:2.2em; color:#F5F3EC; font-weight:400; font-style:italic; margin-bottom:10px; }
+        .logo-text span { font-size:0.4em; font-style:normal; letter-spacing:4px; text-transform:uppercase; display:block; opacity:0.7; }
+        .header h1 { font-size:1.1em; font-weight:500; color:#C7CF9E; letter-spacing:2px; text-transform:uppercase; margin-bottom:4px; }
+        .header .subtitle { color:rgba(245,243,236,0.6); font-size:0.85em; font-weight:300; }
+        .badge-fechamento { display:inline-block; background:#B84527; color:#fff; padding:4px 14px; border-radius:20px; font-size:0.75em; font-weight:700; letter-spacing:1px; margin-top:8px; }
+        .meta-section { background:#fff; border-radius:18px; padding:28px; margin-bottom:18px; box-shadow:0 2px 20px rgba(50,77,56,0.06); border:1px solid rgba(50,77,56,0.08); }
+        .meta-numeros { display:flex; justify-content:space-between; flex-wrap:wrap; gap:15px; margin-bottom:22px; }
+        .meta-item { text-align:center; flex:1; min-width:120px; padding:12px 8px; background:#fafaf6; border-radius:12px; border:1px solid rgba(50,77,56,0.06); }
+        .meta-item .label { color:#8BA279; font-size:0.7em; text-transform:uppercase; letter-spacing:1.5px; font-weight:600; }
+        .meta-item .value { font-size:1.4em; font-weight:700; color:#324D38; margin-top:6px; }
+        .meta-item .value.destaque { color:#B84527; }
+        .progress-container { background:#edeadf; border-radius:14px; height:36px; overflow:hidden; }
+        .progress-bar { height:100%; border-radius:14px; background:linear-gradient(90deg,#8BA279,#324D38); transition:width 1.5s ease; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85em; color:#F5F3EC; text-shadow:0 1px 2px rgba(0,0,0,0.3); min-width:60px; }
+        .comparativo { padding:14px 20px; border-radius:12px; margin-bottom:18px; font-size:0.92em; font-weight:500; }
+        .comparativo.positivo { background:rgba(50,77,56,0.08); border:1px solid rgba(50,77,56,0.15); color:#324D38; }
+        .comparativo.negativo { background:rgba(184,69,39,0.08); border:1px solid rgba(184,69,39,0.15); color:#B84527; }
+        .comparativo-justo { background:#fff; border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:0 2px 20px rgba(50,77,56,0.06); border:2px solid #C7CF9E; }
+        .comparativo-justo h3 { font-size:0.95em; margin-bottom:14px; color:#324D38; }
+        .comparativo-justo small { display:block; margin-top:10px; color:#8BA279; font-size:0.82em; }
+        .justo-grid { display:flex; gap:14px; flex-wrap:wrap; }
+        .justo-item { flex:1; min-width:140px; text-align:center; padding:12px; background:#fafaf6; border-radius:10px; }
+        .justo-item.result { background:rgba(50,77,56,0.06); }
+        .justo-label { font-size:0.72em; text-transform:uppercase; letter-spacing:1px; color:#8BA279; font-weight:600; }
+        .justo-value { font-size:1.2em; font-weight:700; color:#324D38; margin-top:4px; }
+        .justo-value span { font-size:0.6em; font-weight:400; color:#888; }
+        .cards { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+        .card { flex:1; min-width:280px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 2px 20px rgba(50,77,56,0.06); border:1px solid rgba(50,77,56,0.08); }
+        .card-header { padding:14px 20px; background:rgba(50,77,56,0.04); font-weight:600; font-size:0.88em; color:#324D38; border-bottom:1px solid rgba(50,77,56,0.06); }
+        .card-body { padding:18px 20px; }
+        .stat-row { display:flex; justify-content:space-between; padding:7px 0; font-size:0.88em; color:#555; }
+        .stat-value { font-weight:600; color:#324D38; }
+        .stat-row.highlight { font-weight:700; font-size:0.95em; padding-top:12px; margin-top:4px; border-top:1px solid rgba(50,77,56,0.08); }
+        .highlight-value { color:#B84527; font-size:1.15em; font-weight:700; }
+        .motivacao { text-align:center; padding-top:12px; font-size:0.95em; color:#8BA279; font-weight:600; }
+        .preview-card { border-color:rgba(184,69,39,0.15); }
+        .preview-card .card-header { background:rgba(184,69,39,0.04); color:#B84527; }
+        .section { background:#fff; border-radius:18px; padding:28px; margin-bottom:18px; box-shadow:0 2px 20px rgba(50,77,56,0.06); border:1px solid rgba(50,77,56,0.08); }
+        .section h2 { font-size:1.05em; margin-bottom:18px; color:#324D38; font-weight:700; }
+        .section h3 { font-size:0.92em; margin-bottom:12px; color:#324D38; font-weight:600; }
+        .table-wrapper { overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; font-size:0.85em; }
+        thead th { text-align:left; padding:10px 12px; background:rgba(50,77,56,0.04); color:#8BA279; font-weight:600; font-size:0.8em; text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid rgba(50,77,56,0.1); }
+        tbody td { padding:10px 12px; border-bottom:1px solid rgba(50,77,56,0.06); }
+        .num { text-align:right; font-variant-numeric:tabular-nums; }
+        .fechamento-section { border:2px solid #324D38; }
+        .insight-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px; margin-bottom:22px; }
+        .insight-card { background:#fafaf6; border-radius:14px; padding:18px; text-align:center; border:1px solid rgba(50,77,56,0.06); }
+        .insight-card.wide { grid-column:1/-1; display:flex; align-items:center; gap:18px; text-align:left; justify-content:center; }
+        .insight-icon { font-size:1.5em; margin-bottom:6px; }
+        .insight-label { font-size:0.72em; text-transform:uppercase; letter-spacing:1px; color:#8BA279; font-weight:600; }
+        .insight-value { font-size:1.4em; font-weight:700; color:#324D38; margin:4px 0; }
+        .insight-sub { font-size:0.78em; color:#999; }
+        .insights-grid-2col { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:18px; }
+        @media (max-width:700px) { .insights-grid-2col { grid-template-columns:1fr; } }
+        .chart-section { background:#fafaf6; border-radius:14px; padding:18px; border:1px solid rgba(50,77,56,0.06); }
+        .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+        .bar-label { width:35px; font-size:0.8em; font-weight:600; color:#555; }
+        .bar-track { flex:1; background:#edeadf; border-radius:8px; height:22px; overflow:hidden; }
+        .bar-fill { height:100%; background:linear-gradient(90deg,#8BA279,#324D38); border-radius:8px; transition:width 1s ease; }
+        .bar-value { width:90px; text-align:right; font-size:0.8em; font-weight:600; color:#324D38; }
+        .mini-table { background:#fafaf6; border-radius:14px; padding:18px; border:1px solid rgba(50,77,56,0.06); margin-bottom:14px; }
+        .mini-table.fraco { border-color:rgba(184,69,39,0.12); }
+        .mini-table table { font-size:0.85em; }
+        .mini-table td { padding:8px 10px; }
+        .mensagem-section { background:#fff; border-radius:18px; padding:28px; margin-bottom:18px; box-shadow:0 2px 20px rgba(50,77,56,0.06); border:1px solid rgba(50,77,56,0.08); }
+        .mensagem-section h2 { font-size:1em; margin-bottom:16px; color:#324D38; font-weight:600; }
+        .mensagem-texto { background:#fafaf6; border:1px solid rgba(50,77,56,0.08); border-radius:12px; padding:20px; white-space:pre-wrap; font-size:0.88em; line-height:1.7; color:#444; max-height:500px; overflow-y:auto; }
+        .btn-copiar { display:block; width:100%; margin-top:16px; padding:15px; border:none; border-radius:12px; background:linear-gradient(135deg,#324D38,#4a6b52); color:#F5F3EC; font-size:0.95em; font-weight:600; cursor:pointer; transition:all 0.3s; letter-spacing:0.5px; }
+        .btn-copiar:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(50,77,56,0.3); }
+        .btn-copiar.copiado { background:linear-gradient(135deg,#8BA279,#a3b88e); }
+        .aviso { background:rgba(230,168,52,0.1); border:1px solid rgba(230,168,52,0.25); border-radius:12px; padding:16px 20px; margin-bottom:18px; font-size:0.88em; color:#8B6914; }
+        .aviso code { background:rgba(230,168,52,0.15); padding:2px 8px; border-radius:5px; font-size:0.9em; }
+        .footer { text-align:center; padding:25px 20px; color:#BBB494; font-size:0.75em; letter-spacing:1px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header"><div class="logo-text">Bem Me Quer<br><span>Cosméticos</span></div><h1>📊 Relatório de Vendas</h1><div class="subtitle">FEVEREIRO 2026 — Dia 24/02/2026</div></div>
+    
+    <div class="meta-section">
+        <div class="meta-numeros">
+            <div class="meta-item"><div class="label">Vendas</div><div class="value">R$54.424,85</div></div>
+            <div class="meta-item"><div class="label">Meta</div><div class="value">R$80.000,00</div></div>
+            <div class="meta-item"><div class="label">Faltam</div><div class="value destaque">R$25.575,15</div></div>
+            <div class="meta-item"><div class="label">Por dia (1 dias)</div><div class="value">R$0,00</div></div>
+        </div>
+        <div class="progress-container"><div class="progress-bar" style="width:68%">68.0%</div></div>
+    </div>
+    <div class="comparativo positivo">🎉 <strong>R$5.000,00</strong> a mais que fevereiro do ano passado!</div>
+    
+    <div class="cards"></div>
+    
+    
+    
+    <div class="section" style="border:2px solid rgba(120,120,120,0.4);background:rgba(120,120,120,0.04)">
+            <h2>💰 Área Cinzenta — Financeiro</h2>
+            <div class="subtitle" style="color:rgba(120,120,120,0.7);font-size:0.82em;margin-top:-14px;margin-bottom:18px">Semana 23/02 a 27/02/2026</div>
+            
+            <div style="background:linear-gradient(135deg,#1a1a2e,#2d2d44);border-radius:14px;padding:16px;margin-bottom:16px;color:#fff">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                <div><span style="font-size:1.1em">💜</span> <strong>Reserva Nubank (CDB)</strong></div>
+                <div style="font-size:0.8em;opacity:0.7">Meta: R$50,000.00</div>
+            </div>
+            <div style="font-size:1.6em;font-weight:700;margin-bottom:8px">R$18.545,36</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:20px;height:10px;margin-bottom:8px;overflow:hidden">
+                <div style="background:#E6A834;height:100%;width:37%;border-radius:20px;transition:width 0.5s"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.82em;opacity:0.8">
+                <span>37% da meta</span>
+                <span>Faltam R$31.454,64</span>
+            </div>
+            <div style="margin-top:10px;padding:10px;background:rgba(255,255,255,0.08);border-radius:8px;font-size:0.82em">🚨 Caixa insuficiente mesmo com adiamentos. Se necessário, use ATÉ R$5,563.61 do Nubank (máx 30% da reserva). Nubank atual: R$18,545.36. ⚠️ Reponha na primeira oportunidade!</div>
+        </div>
+            <div style="margin-bottom:14px"><div style="background:rgba(75,85,110,0.06);border-radius:10px;padding:14px;margin-bottom:8px;border-left:3px solid #666;font-size:0.85em"><strong>🎭 Fevereiro — Carnaval</strong><br>Carnaval pode aquecer maquiagem e cuidados pessoais. Mês curto (menos dias úteis). Controle o CMV!</div></div>
+            <div class="insight-grid" style="margin-bottom:10px">
+                <div class="insight-card" style="background:#fff"><div class="insight-icon">🏦</div><div class="insight-label">Caixa (Sicoob)</div><div class="insight-value" style="color:#B84527">R$7.928,15</div><div class="insight-sub">Atualizado: 24/02</div></div>
+                <div class="insight-card" style="background:#fff"><div class="insight-icon">📋</div><div class="insight-label">Contas da Semana</div><div class="insight-value">R$14.218,26</div><div class="insight-sub">11 contas</div></div>
+                <div class="insight-card" style="background:#fff"><div class="insight-icon">🚨</div><div class="insight-label">Falta</div><div class="insight-value" style="color:#B84527">R$6.290,11</div><div class="insight-sub">Precisa negociar</div></div>
+            </div>
+            <div class="justo-grid" style="margin-bottom:14px">
+                <div class="justo-item" style="background:#fff"><div class="justo-label">🔒 Fixas (não adia)</div><div class="justo-value">R$261,73</div></div>
+                <div class="justo-item" style="background:#fff"><div class="justo-label">🤝 Negociáveis</div><div class="justo-value">R$8.504,38</div></div>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:18px;margin-bottom:18px;border:2px solid #B84527">
+                <h3 style="margin-top:0;color:#B84527">🚨 Teto Diário de Pagamento</h3>
+                <div style="background:rgba(120,120,120,0.06);border-radius:10px;padding:14px;margin-bottom:14px;font-size:0.85em">
+                    <p style="margin:0"><strong>Receita média:</strong> R$3,686.60/dia</p>
+                    <p style="margin:8px 0 0 0"><strong>Teto recomendado:</strong> R$2,027.63/dia (55% da média — margem de 45%)</p>
+                </div>
+                <div class="table-wrapper"><table style="font-size:0.85em;width:100%"><thead><tr><th>Dia</th><th>Total a Pagar</th><th>% do Teto</th><th>Status</th></tr></thead><tbody>
+                    <tr>
+                    <td>SEGUNDA-FEIRA (23/02)</td>
+                    <td class="num">R$0,00</td>
+                    <td class="num">0%</td>
+                    <td style="color:#324D38;font-weight:600">✅ Zerado</td>
+                </tr><tr>
+                    <td>TERÇA-FEIRA (24/02)</td>
+                    <td class="num">R$0,00</td>
+                    <td class="num">0%</td>
+                    <td style="color:#324D38;font-weight:600">✅ Zerado</td>
+                </tr><tr>
+                    <td>QUARTA-FEIRA (25/02)</td>
+                    <td class="num">R$7.137,73</td>
+                    <td class="num">352%</td>
+                    <td style="color:#B84527;font-weight:600">🚨 Acima do teto (352% do teto) — negocie adiamentos!</td>
+                </tr><tr>
+                    <td>QUINTA-FEIRA (26/02)</td>
+                    <td class="num">R$3.504,38</td>
+                    <td class="num">173%</td>
+                    <td style="color:#B84527;font-weight:600">🚨 Acima do teto (173% do teto) — negocie adiamentos!</td>
+                </tr><tr>
+                    <td>SEXTA-FEIRA (27/02)</td>
+                    <td class="num">R$3.576,15</td>
+                    <td class="num">176%</td>
+                    <td style="color:#B84527;font-weight:600">🚨 Acima do teto (176% do teto) — negocie adiamentos!</td>
+                </tr>
+                </tbody></table></div>
+                <div style="background:rgba(120,120,120,0.06);border-radius:10px;padding:12px;margin-top:14px;font-size:0.85em">
+                    📊 Ocupação: <strong style="color:#B84527">140%</strong><br>
+                    💡 ⚠️ Semana ACIMA da capacidade de pagamento (140%). Negocie adiamentos ou prazos maiores.
+                </div>
+            </div>
+            
+            
+            <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <strong>SEGUNDA-FEIRA 23/02</strong>
+                    <div style="text-align:right">
+                        <div style="font-weight:700;color:#888;font-size:0.95em">R$0,00</div>
+                        
+                    </div>
+                </div>
+                
+                <div style="font-size:0.85em;color:#888">Zerado — Caixa: <strong>R$7.928,15</strong></div>
+            </div><div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <strong>TERÇA-FEIRA 24/02</strong>
+                    <div style="text-align:right">
+                        <div style="font-weight:700;color:#888;font-size:0.95em">R$0,00</div>
+                        
+                    </div>
+                </div>
+                
+                <div style="font-size:0.85em;color:#888">Zerado — Caixa: <strong>R$7.928,15</strong></div>
+            </div><div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:10px;border-left:3px solid #B84527;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <strong>QUARTA-FEIRA 25/02</strong>
+                    <div style="text-align:right">
+                        <div style="font-weight:700;color:#324D38;font-size:0.95em">R$7.137,73</div>
+                        
+                    </div>
+                </div>
+                <table style="font-size:0.82em"><tbody><tr><td>ALUGUEL LOJA   02/12 <span style="color:#4B556E;font-size:0.75em">🤝</span></td><td class="num">R$2.500,00</td></tr><tr><td>ALUGUEL LOJA   02/12 <span style="color:#4B556E;font-size:0.75em">🤝</span> <span style="color:#888;font-size:0.75em">[CAIXA LOJA]</span></td><td class="num">R$2.500,00</td></tr><tr><td>[EMPRESTIMO - BERNARDO] REF NF SANTA CLARA 2/4</td><td class="num">R$1.876,00</td></tr><tr><td>[PLANO DE SAÚDE E ODONTOLÓGICO] - SAMP <span style="color:#B84527;font-size:0.75em">🔒</span></td><td class="num">R$230,88</td></tr><tr><td>[SICOOB] - TAXA DE BANCO <span style="color:#B84527;font-size:0.75em">🔒</span></td><td class="num">R$30,85</td></tr></tbody></table>
+                <div style="text-align:right;margin-top:8px;padding-top:8px;border-top:1px solid rgba(75,85,110,0.1);font-size:0.82em">Caixa antes: <strong>R$7.928,15</strong> → Caixa após: <strong style="color:#E6A834">R$790,42</strong></div>
+            </div><div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:10px;border-left:3px solid #E6A834;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <strong>QUINTA-FEIRA 26/02</strong>
+                    <div style="text-align:right">
+                        <div style="font-weight:700;color:#324D38;font-size:0.95em">R$3.504,38</div>
+                        
+                    </div>
+                </div>
+                <table style="font-size:0.82em"><tbody><tr><td>Compra de Mercadoria - NF 9161 1/3 <span style="color:#4B556E;font-size:0.75em">🤝</span></td><td class="num">R$1.808,20</td></tr><tr><td>Compra de Mercadoria - NF 36178 3/6 <span style="color:#4B556E;font-size:0.75em">🤝</span></td><td class="num">R$1.696,18</td></tr></tbody></table>
+                <div style="text-align:right;margin-top:8px;padding-top:8px;border-top:1px solid rgba(75,85,110,0.1);font-size:0.82em">Caixa antes: <strong>R$790,42</strong> → Caixa após: <strong style="color:#B84527">-R$2.713,96</strong></div>
+            </div><div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:10px;border-left:3px solid #E6A834;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                    <strong>SEXTA-FEIRA 27/02</strong>
+                    <div style="text-align:right">
+                        <div style="font-weight:700;color:#324D38;font-size:0.95em">R$3.576,15</div>
+                        
+                    </div>
+                </div>
+                <table style="font-size:0.82em"><tbody><tr><td>Compra de Mercadoria - NF 17015 3/3</td><td class="num">R$1.633,47</td></tr><tr><td>Compra de Mercadoria - NF 20720 3/3</td><td class="num">R$1.128,29</td></tr><tr><td>Compra de Mercadoria - NF 48333 3/4</td><td class="num">R$599,39</td></tr><tr><td>[MARKETING] [EMBALA FLEX] - Sacolas 1/2</td><td class="num">R$215,00</td></tr></tbody></table>
+                <div style="text-align:right;margin-top:8px;padding-top:8px;border-top:1px solid rgba(75,85,110,0.1);font-size:0.82em">Caixa antes: <strong>-R$2.713,96</strong> → Caixa após: <strong style="color:#B84527">-R$6.290,11</strong></div>
+            </div>
+            <div style="margin-bottom:14px">
+                <h3 style="margin-bottom:10px">📌 Decisões da Semana</h3>
+                <div class="justo-grid"><div class="justo-item" style="background:#fff;border-left:3px solid #B84527">
+                <div class="justo-label">💜 Nubank (CDB)</div>
+                <div class="justo-value" style="font-size:0.95em;color:#B84527">Não transferir</div>
+                <div class="justo-label" style="margin-top:6px;font-size:0.8em;line-height:1.4">🚨 Semana muito apertada — NÃO transfira essa semana. Lembre que esse valor vai se acumulando: na próxima semana transfira R$1,000.00 (2 semanas).</div>
+            </div><div class="justo-item" style="background:#fff;border-left:3px solid #B84527">
+                <div class="justo-label">📣 Meta Ads (Tráfego)</div>
+                <div class="justo-value" style="font-size:0.95em;color:#B84527">Pausar</div>
+                <div class="justo-label" style="margin-top:6px;font-size:0.8em;line-height:1.4">⏸️ Essa semana está apertada — vamos segurar as campanhas. Retome assim que o caixa melhorar!</div>
+            </div></div>
+            </div>
+            <div style="background:rgba(230,168,52,0.08);border-radius:12px;padding:16px;margin-bottom:14px;border:1px solid rgba(230,168,52,0.25)">
+                <h3 style="margin-top:0;color:#8B6914">🤝 Negociar Adiamento — R$8.504,38</h3>
+                <p style="font-size:0.85em;margin-bottom:10px">Sugestão de melhores datas (dias mais leves nas próximas 4 semanas):</p>
+                <table style="font-size:0.85em;width:100%"><thead><tr><th style="text-align:left">Fornecedor</th><th>Valor</th><th>Vence</th><th>Adiar para</th></tr></thead><tbody><tr>
+                    <td>ALUGUEL LOJA   02/12</td>
+                    <td class="num">R$2.500,00</td>
+                    <td style="text-align:center">25/02</td>
+                    <td style="text-align:center;font-weight:700;color:#324D38">18/03</td>
+                </tr><tr>
+                    <td>ALUGUEL LOJA   02/12</td>
+                    <td class="num">R$2.500,00</td>
+                    <td style="text-align:center">25/02</td>
+                    <td style="text-align:center;font-weight:700;color:#324D38">24/03</td>
+                </tr><tr>
+                    <td>NATURALLES</td>
+                    <td class="num">R$1.808,20</td>
+                    <td style="text-align:center">26/02</td>
+                    <td style="text-align:center;font-weight:700;color:#324D38">26/03</td>
+                </tr><tr>
+                    <td>BL DISTRIBUIDORA (HASKELL)</td>
+                    <td class="num">R$1.696,18</td>
+                    <td style="text-align:center">26/02</td>
+                    <td style="text-align:center;font-weight:700;color:#324D38">12/03</td>
+                </tr></tbody></table>
+                <div style="margin-top:10px;font-size:0.82em;color:#666">📖 <strong>Traduzindo:</strong> Se conseguir adiar esses boletos, o caixa fica R$8.504,38 mais leve essa semana. O fornecedor pode sugerir data diferente — o importante é que saia dessa semana!</div>
+            </div>
+            <div style="margin-bottom:14px"><h3 style="margin-bottom:10px">🧠 Análise & Insights</h3><div style="background:rgba(75,85,110,0.04);border-radius:8px;padding:12px;margin-bottom:8px;font-size:0.85em;border-left:3px solid #4B556E">📊 Referência fev/2025: o mês faturou R$70,045.35 (~R$3,686.60/dia em 19 dias). Use como comparativo, NÃO como garantia.</div><div style="background:rgba(184,69,39,0.06);border-radius:8px;padding:12px;margin-bottom:8px;font-size:0.85em;border-left:3px solid #B84527">🚨 O caixa NÃO cobre as contas da semana. Faltam R$6,290.11. Priorize as fixas (R$261.73) e negocie adiamento das negociáveis (R$8,504.38).</div><div style="background:rgba(230,168,52,0.06);border-radius:8px;padding:12px;margin-bottom:8px;font-size:0.85em;border-left:3px solid #8B6914">📅 QUARTA-FEIRA (25/02) é o dia mais pesado: R$7,137.73. Se precisar aliviar, veja se alguma conta desse dia é negociável.</div><div style="background:rgba(75,85,110,0.04);border-radius:8px;padding:12px;margin-bottom:8px;font-size:0.85em;border-left:3px solid #4B556E">📌 ALUGUEL LOJA   02/12 aparece 2x essa semana, totalizando R$5,000.00. Nas próximas compras, tente negociar prazos escalonados para não concentrar.</div><div style="background:rgba(75,85,110,0.04);border-radius:8px;padding:12px;margin-bottom:8px;font-size:0.85em;border-left:3px solid #4B556E">💡 Há 9 boletos de compras essa semana. Para as próximas negociações, priorize prazos de 30/60/90 dias e tente espaçar os vencimentos ao longo do mês.</div><div style="background:rgba(75,85,110,0.04);border-radius:8px;padding:12px;margin-bottom:8px;font-size:0.85em;border-left:3px solid #4B556E">🤝 R$8,504.38 são de fornecedores negociáveis — isso é 60% do total. Na reunião de compras, avalie redistribuir esses vencimentos pro meio/fim do mês.</div></div>
+            <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:14px">
+            <h3 style="margin-top:0">📈 Projeção até fim do mês</h3>
+            <div class="justo-grid">
+                <div class="justo-item"><div class="justo-label">Saldo Atual</div><div class="justo-value">R$7.928,15</div></div>
+                <div class="justo-item"><div class="justo-label">Contas a Pagar</div><div class="justo-value" style="color:#B84527">- R$14.218,26</div><div class="justo-label" style="margin-top:4px">11 contas</div></div>
+                <div class="justo-item"><div class="justo-label">Ref. entrada (fev/2025)</div><div class="justo-value" style="color:#888">+ R$14.746,39</div><div class="justo-label" style="margin-top:4px">~R$3,687/dia × 4 dias</div></div>
+                <div class="justo-item result"><div class="justo-label">Saldo s/ contas</div><div class="justo-value" style="color:#B84527">-R$6.290,11</div></div>
+            </div>
+            <div style="background:rgba(120,120,120,0.06);border-radius:8px;padding:12px;margin-top:10px;font-size:0.85em">
+                📖 <strong>Traduzindo:</strong> Saldo atual menos todas as contas previstas = <strong style="color:#B84527">-R$6.290,11</strong>.
+                Precisa negociar adiamentos e/ou contar com receitas que vão entrar!
+                <br><span style="color:#888;font-size:0.9em">📊 Referência fev/2025: o mês faturou R$70.045,35 (~R$3.686,60/dia). Se repetir, entra +R$14.746,39 ainda. <strong>Use como comparativo, não garantia.</strong></span>
+            </div>
+        </div>
+            <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:14px">
+                <h3 style="margin-top:0">📦 Se liberar pedido hoje, quando cai?</h3>
+                <p style="font-size:0.82em;color:#666;margin-bottom:8px">Simulação: se fechar pedido hoje (24/02), veja onde cai cada prazo e se a semana aguenta:</p>
+                <table style="font-size:0.85em;width:100%"><thead><tr><th>Prazo</th><th>Vence em</th><th>Semana já tem</th><th>Viável?</th></tr></thead><tbody><tr><td style="text-align:center"><strong>30d</strong></td><td>Qui 26/03 (mar)</td><td class="num">R$10.956,72</td><td style="color:#E6A834;font-weight:600">⚠️ Semana carregada</td></tr><tr><td style="text-align:center"><strong>40d</strong></td><td>Seg 06/04 (abr)</td><td class="num">R$3.930,97</td><td style="color:#324D38;font-weight:600">✅ Boa janela</td></tr><tr><td style="text-align:center"><strong>50d</strong></td><td>Qua 15/04 (abr)</td><td class="num">R$8.449,77</td><td style="color:#E6A834;font-weight:600">⚠️ Semana carregada</td></tr><tr><td style="text-align:center"><strong>60d</strong></td><td>Seg 27/04 (abr)</td><td class="num">R$10.277,33</td><td style="color:#E6A834;font-weight:600">⚠️ Semana carregada</td></tr><tr><td style="text-align:center"><strong>90d</strong></td><td>Seg 25/05 (mai)</td><td class="num">R$5.000,00</td><td style="color:#324D38;font-weight:600">✅ Boa janela</td></tr></tbody></table>
+                <div style="margin-top:10px;font-size:0.82em;color:#666">📖 <strong>Traduzindo:</strong> Antes de liberar pedido, veja se o vencimento cai numa semana leve. Prefira prazos que caem em semanas com menos contas. Quanto mais verde, melhor!</div>
+            </div>
+            <div style="background:rgba(139,100,50,0.04);border-radius:14px;padding:18px;margin-bottom:18px;border:2px solid rgba(139,100,50,0.2)">
+                <h3 style="margin-top:0;color:#8B6914">🎯 Ponto 4B — Recomendações Inteligentes & Limites de Compra</h3>
+                <p style="font-size:0.85em;color:#666;margin-bottom:14px">Análise automática: melhor data pra liberar, validação de limites (semanal R$15k/ideal, diário R$8k, parcela R$2k), e melhor forma de pagamento.</p>
+                
+                <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid #ddd">
+                    <h4 style="margin-top:0;color:#8B6914">📊 Limites de Compra Configurados</h4>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;font-size:0.85em">
+                        <div style="background:#e8f5e9;border-radius:8px;padding:10px;text-align:center">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">Semanal Ideal</div>
+                            <div style="font-size:1.4em;font-weight:700;color:#2e7d32">R$15.000</div>
+                        </div>
+                        <div style="background:#fff3e0;border-radius:8px;padding:10px;text-align:center">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">Emergência</div>
+                            <div style="font-size:1.4em;font-weight:700;color:#e65100">R$20.000</div>
+                        </div>
+                        <div style="background:#ffebee;border-radius:8px;padding:10px;text-align:center">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">Diário</div>
+                            <div style="font-size:1.4em;font-weight:700;color:#c62828">R$8.000</div>
+                        </div>
+                        <div style="background:#f0f8ff;border-radius:8px;padding:10px;text-align:center">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">Parcela Máx</div>
+                            <div style="font-size:1.4em;font-weight:700;color:#2E5AA0">R$2.000</div>
+                        </div>
+                    </div>
+                </div>
+                
+                
+                <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:0.95em">🟢 Haskell (BL Distribuidora)</div>
+                        <span style="background:#324D38;color:#fff;padding:4px 10px;border-radius:8px;font-size:0.75em;font-weight:600">OK</span>
+                    </div>
+                    
+                    <div style="background:rgba(120,120,120,0.06);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em">
+                        <strong>📅 Quando liberar?</strong><br>
+                        ✅ BOA JANELA: Semana de 10/04 tem apenas R$ 3,930.97 — ótimo momento!<br>
+                        <strong style="color:#324D38">Prazo recomendado: 45 dias → Vence em 10/04</strong>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:0.85em">
+                        <div style="background:#fff3e0;border-radius:8px;padding:8px;border-left:3px solid #E6A834">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">CARGA DA SEMANA</div>
+                            <div style="font-weight:700;color:#8B6914">R$3.930,97</div>
+                        </div>
+                        <div style="background:#f0f8ff;border-radius:8px;padding:8px;border-left:3px solid #4B7DC1">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">PAGAMENTO</div>
+                            <div style="font-weight:700;color:#2E5AA0">Boleto 📊</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #666">
+                        💡 <strong>Boleto 📊:</strong> Vale a pena Boleto por 45 dias. Ganho financeiro: +R$58.56 (CDB) menos taxa (-R$20.00) = R$38.56 positivo.
+                    </div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:0.95em">🟢 Bothânico</div>
+                        <span style="background:#324D38;color:#fff;padding:4px 10px;border-radius:8px;font-size:0.75em;font-weight:600">OK</span>
+                    </div>
+                    
+                    <div style="background:rgba(120,120,120,0.06);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em">
+                        <strong>📅 Quando liberar?</strong><br>
+                        ✅ BOA JANELA: Semana de 10/04 tem apenas R$ 3,930.97 — ótimo momento!<br>
+                        <strong style="color:#324D38">Prazo recomendado: 45 dias → Vence em 10/04</strong>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:0.85em">
+                        <div style="background:#fff3e0;border-radius:8px;padding:8px;border-left:3px solid #E6A834">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">CARGA DA SEMANA</div>
+                            <div style="font-weight:700;color:#8B6914">R$3.930,97</div>
+                        </div>
+                        <div style="background:#f0f8ff;border-radius:8px;padding:8px;border-left:3px solid #4B7DC1">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">PAGAMENTO</div>
+                            <div style="font-weight:700;color:#2E5AA0">Boleto 📊</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #666">
+                        💡 <strong>Boleto 📊:</strong> Vale a pena Boleto por 45 dias. Ganho financeiro: +R$58.56 (CDB) menos taxa (-R$20.00) = R$38.56 positivo.
+                    </div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:0.95em">🟢 Glatten (Elos Cosméticos)</div>
+                        <span style="background:#324D38;color:#fff;padding:4px 10px;border-radius:8px;font-size:0.75em;font-weight:600">OK</span>
+                    </div>
+                    
+                    <div style="background:rgba(120,120,120,0.06);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em">
+                        <strong>📅 Quando liberar?</strong><br>
+                        ✅ BOA JANELA: Semana de 10/04 tem apenas R$ 3,930.97 — ótimo momento!<br>
+                        <strong style="color:#324D38">Prazo recomendado: 45 dias → Vence em 10/04</strong>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:0.85em">
+                        <div style="background:#fff3e0;border-radius:8px;padding:8px;border-left:3px solid #E6A834">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">CARGA DA SEMANA</div>
+                            <div style="font-weight:700;color:#8B6914">R$3.930,97</div>
+                        </div>
+                        <div style="background:#f0f8ff;border-radius:8px;padding:8px;border-left:3px solid #4B7DC1">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">PAGAMENTO</div>
+                            <div style="font-weight:700;color:#2E5AA0">Boleto 📊</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #666">
+                        💡 <strong>Boleto 📊:</strong> Vale a pena Boleto por 45 dias. Ganho financeiro: +R$58.56 (CDB) menos taxa (-R$20.00) = R$38.56 positivo.
+                    </div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:0.95em">🟢 Salon Line (Lançamento)</div>
+                        <span style="background:#324D38;color:#fff;padding:4px 10px;border-radius:8px;font-size:0.75em;font-weight:600">OK</span>
+                    </div>
+                    
+                    <div style="background:rgba(120,120,120,0.06);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em">
+                        <strong>📅 Quando liberar?</strong><br>
+                        ✅ BOA JANELA: Semana de 10/04 tem apenas R$ 3,930.97 — ótimo momento!<br>
+                        <strong style="color:#324D38">Prazo recomendado: 45 dias → Vence em 10/04</strong>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:0.85em">
+                        <div style="background:#fff3e0;border-radius:8px;padding:8px;border-left:3px solid #E6A834">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">CARGA DA SEMANA</div>
+                            <div style="font-weight:700;color:#8B6914">R$3.930,97</div>
+                        </div>
+                        <div style="background:#f0f8ff;border-radius:8px;padding:8px;border-left:3px solid #4B7DC1">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">PAGAMENTO</div>
+                            <div style="font-weight:700;color:#2E5AA0">Boleto 📊</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #666">
+                        💡 <strong>Boleto 📊:</strong> Vale a pena Boleto por 45 dias. Ganho financeiro: +R$71.48 (CDB) menos taxa (-R$24.41) = R$47.07 positivo.
+                    </div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:0.95em">🟢 Nutrimaxxi</div>
+                        <span style="background:#324D38;color:#fff;padding:4px 10px;border-radius:8px;font-size:0.75em;font-weight:600">OK</span>
+                    </div>
+                    
+                    <div style="background:rgba(120,120,120,0.06);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em">
+                        <strong>📅 Quando liberar?</strong><br>
+                        ✅ BOA JANELA: Semana de 10/04 tem apenas R$ 3,930.97 — ótimo momento!<br>
+                        <strong style="color:#324D38">Prazo recomendado: 45 dias → Vence em 10/04</strong>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:0.85em">
+                        <div style="background:#fff3e0;border-radius:8px;padding:8px;border-left:3px solid #E6A834">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">CARGA DA SEMANA</div>
+                            <div style="font-weight:700;color:#8B6914">R$3.930,97</div>
+                        </div>
+                        <div style="background:#f0f8ff;border-radius:8px;padding:8px;border-left:3px solid #4B7DC1">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">PAGAMENTO</div>
+                            <div style="font-weight:700;color:#2E5AA0">Boleto 📊</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #666">
+                        💡 <strong>Boleto 📊:</strong> Vale a pena Boleto por 45 dias. Ganho financeiro: +R$58.56 (CDB) menos taxa (-R$20.00) = R$38.56 positivo.
+                    </div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:0.95em">🟢 DPC Distribuidora</div>
+                        <span style="background:#324D38;color:#fff;padding:4px 10px;border-radius:8px;font-size:0.75em;font-weight:600">OK</span>
+                    </div>
+                    
+                    <div style="background:rgba(120,120,120,0.06);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em">
+                        <strong>📅 Quando liberar?</strong><br>
+                        ✅ BOA JANELA: Semana de 06/04 tem apenas R$ 3,930.97 — ótimo momento!<br>
+                        <strong style="color:#324D38">Prazo recomendado: 40 dias → Vence em 06/04</strong>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:0.85em">
+                        <div style="background:#fff3e0;border-radius:8px;padding:8px;border-left:3px solid #E6A834">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">CARGA DA SEMANA</div>
+                            <div style="font-weight:700;color:#8B6914">R$3.930,97</div>
+                        </div>
+                        <div style="background:#f0f8ff;border-radius:8px;padding:8px;border-left:3px solid #4B7DC1">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">PAGAMENTO</div>
+                            <div style="font-weight:700;color:#2E5AA0">Boleto 📊</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #666">
+                        💡 <strong>Boleto 📊:</strong> Vale a pena Boleto por 40 dias. Ganho financeiro: +R$52.05 (CDB) menos taxa (-R$20.00) = R$32.05 positivo.
+                    </div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #E6A834;border-left:4px solid #E6A834">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:0.95em">🟡 DRL</div>
+                        <span style="background:#E6A834;color:#fff;padding:4px 10px;border-radius:8px;font-size:0.75em;font-weight:600">ATENÇÃO</span>
+                    </div>
+                    
+                    <div style="background:rgba(120,120,120,0.06);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em">
+                        <strong>📅 Quando liberar?</strong><br>
+                        ⚠️ ATENÇÃO: Semana já está carregada (R$ 10,956.72). Procure outro prazo se possível.<br>
+                        <strong style="color:#E6A834">Prazo recomendado: 30 dias → Vence em 26/03</strong>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;font-size:0.85em">
+                        <div style="background:#fff3e0;border-radius:8px;padding:8px;border-left:3px solid #E6A834">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">CARGA DA SEMANA</div>
+                            <div style="font-weight:700;color:#8B6914">R$10.956,72</div>
+                        </div>
+                        <div style="background:#f0f8ff;border-radius:8px;padding:8px;border-left:3px solid #4B7DC1">
+                            <div style="color:#666;font-size:0.75em;font-weight:600">PAGAMENTO</div>
+                            <div style="font-weight:700;color:#2E5AA0">Boleto 📊</div>
+                        </div>
+                    </div>
+                    
+                    <div style="background:#f9f9f9;border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #666">
+                        💡 <strong>Boleto 📊:</strong> Vale a pena Boleto por 30 dias. Ganho financeiro: +R$39.04 (CDB) menos taxa (-R$20.00) = R$19.04 positivo.
+                    </div>
+                </div>
+                <div style="background:linear-gradient(135deg,#1a1a2e,#2d2d44);border-radius:10px;padding:14px;color:#fff;font-size:.85em;margin-top:14px">
+                    <strong>📏 Regras de Ouro:</strong><br>
+                    • <strong>Semanal:</strong> Máximo R$15.000 ideal, até R$20.000 em emergência, NUNCA ultrapassar<br>
+                    • <strong>Diário:</strong> Máximo R$8.000 por dia de pagamento<br>
+                    • <strong>Parcela:</strong> Máximo R$2.000 por parcela (se > disso, dividir em mais parcelas)<br>
+                    • <strong>Dias:</strong> Libere em Sab, Terça ou Quarta (dias mais leves)<br>
+                </div>
+            </div>
+            <div style="background:rgba(139,100,50,0.04);border-radius:14px;padding:18px;margin-bottom:18px;border:2px solid rgba(139,100,50,0.2)">
+                <h3 style="margin-top:0;color:#8B6914">🛒 Planejamento de Compras — Março/2026</h3>
+
+                <div class="insight-grid" style="margin-bottom:12px">
+                    <div class="insight-card" style="background:#fff"><div class="insight-icon">🎯</div><div class="insight-label">Teto de Compra</div><div class="insight-value">R$25.200,00</div><div class="insight-sub">35% de R$72.000,00</div></div>
+                    <div class="insight-card" style="background:#fff"><div class="insight-icon">📦</div><div class="insight-label">Já Comprometido</div><div class="insight-value">R$47.347,64</div><div class="insight-sub">boletos já lançados</div></div>
+                    <div class="insight-card" style="background:#fff"><div class="insight-icon">💚</div><div class="insight-label">Disponível</div><div class="insight-value" style="color:#B84527">R$0,00</div><div class="insight-sub">para novos pedidos</div></div>
+                </div>
+
+                <div style="background:#fff;border-radius:10px;padding:12px;margin-bottom:12px;font-size:0.85em">
+                    📖 <strong>Traduzindo:</strong> Com base na previsão de faturamento de R$72.000,00, o teto de compras é R$25.200,00. Já tem R$47.347,64 comprometido, então <strong style="color:#B84527">pode liberar até R$0,00 em novos pedidos</strong>.
+                </div>
+
+                <div class="justo-grid" style="margin-bottom:12px">
+                    <div class="justo-item" style="background:#fff"><div class="justo-label">CMV Real (mês atual)</div><div class="justo-value" style="color:#B84527">58%</div><div class="justo-label" style="margin-top:4px">Teto: 35%</div></div>
+                    <div class="justo-item" style="background:#fff"><div class="justo-label">Lucro Projetado</div><div class="justo-value" style="color:#324D38">R$14.878,00</div><div class="justo-label" style="margin-top:4px">Fat - CMV - Fixos</div></div>
+                </div>
+                <div style="background:rgba(120,120,120,0.06);border-radius:8px;padding:12px;margin-bottom:12px;font-size:0.84em">
+                    📖 <strong>O que é CMV?</strong> É o Custo da Mercadoria Vendida — quanto você gastou em compras de produtos pra revender. Se o CMV está em 58%, significa que de cada R$100 que entra, R$58 vão pra pagar fornecedores.<br>
+                    <strong>Por que o teto é 35%?</strong> Porque acima disso a margem fica apertada demais pra cobrir salários, aluguel, impostos e ainda sobrar lucro. <span style="color:#B84527">⚠️ Está acima — cada compra nova piora. Gire estoque antes de comprar!</span>
+                </div>
+
+                <div class="mini-table" style="margin-bottom:12px;background:#fff"><h4>📅 Carga por semana em Março/2026</h4><table><thead><tr><th>Semana</th><th>Contas a Pagar</th><th></th></tr></thead><tbody><tr><td>Semana 1</td><td class="num">R$25.846,45</td><td style="color:#324D38"></td></tr><tr><td>Semana 2</td><td class="num">R$17.947,11</td><td style="color:#324D38"></td></tr><tr><td>Semana 3</td><td class="num">R$21.326,25</td><td style="color:#324D38"></td></tr><tr><td>Semana 4</td><td class="num">R$10.956,72</td><td style="color:#324D38"></td></tr><tr><td>Semana 5</td><td class="num">R$9.181,78</td><td style="color:#324D38"> 👈 mais leve</td></tr></tbody></table><p style="font-size:0.82em;color:#666;margin-top:8px">💡 Programe vencimentos dos novos pedidos pra semana mais leve!</p></div>
+
+                <div class="mini-table" style="background:#fff"><h4>🏪 Top Fornecedores (últimos 6 meses)</h4>
+                    <table><thead><tr><th></th><th>Fornecedor</th><th>Média/mês</th><th>Pagamento</th><th>Dia freq.</th></tr></thead><tbody><tr><td>🥇</td><td>BL DISTRIBUIDORA (HASKELL)</td><td class="num">R$8.186,32/mês</td><td class="num">Boleto</td><td class="num">dia 15</td></tr><tr><td>🥈</td><td>ELOS COSMÉTICOS (GLATTEN)</td><td class="num">R$5.744,67/mês</td><td class="num">Boleto</td><td class="num">dia 19</td></tr><tr><td>🥉</td><td>NATURALLES</td><td class="num">R$5.072,71/mês</td><td class="num">Boleto</td><td class="num">dia 23</td></tr><tr><td>4º</td><td>DPC DISTRIBUIDORA</td><td class="num">R$3.513,17/mês</td><td class="num">Boleto</td><td class="num">dia 15</td></tr><tr><td>5º</td><td>BEM MULHER MAQUIAGEM</td><td class="num">R$3.255,67/mês</td><td class="num">Pix</td><td class="num">dia 9</td></tr><tr><td>6º</td><td>ZAKAT DISTRIBUIDORA (SALON LIN</td><td class="num">R$2.138,59/mês</td><td class="num">Boleto</td><td class="num">dia 4</td></tr><tr><td>7º</td><td>Dirce Miranda</td><td class="num">R$2.113,52/mês</td><td class="num">Pix</td><td class="num">dia 1</td></tr><tr><td>8º</td><td>DAC DISTRIBUIDORA</td><td class="num">R$1.476,35/mês</td><td class="num">Boleto</td><td class="num">dia 30</td></tr><tr><td>9º</td><td>SANTE COMERCIO ATACADISTA</td><td class="num">R$1.440,71/mês</td><td class="num">Boleto</td><td class="num">dia 23</td></tr><tr><td>10º</td><td>SEGALI COSMÉTICOS</td><td class="num">R$1.423,72/mês</td><td class="num">Boleto</td><td class="num">dia 9</td></tr></tbody></table>
+                </div>
+            </div>
+            
+            <div style="background:rgba(100,100,100,0.04);border-radius:14px;padding:18px;margin-bottom:18px;border:2px solid rgba(100,100,100,0.2)">
+                <h3 style="margin-top:0;color:#444">💡 Diante do cenário atual, proponho:</h3>
+                <p style="font-size:0.82em;color:#666;margin-bottom:12px">Ações concretas pra aumentar lucro e organizar o financeiro</p>
+                <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;border-left:3px solid #666">
+                    <div style="font-weight:600;margin-bottom:4px">🎯 Reduzir CMV para 35% <span style="color:#324D38;font-weight:600">+R$9.765,65/mês</span></div>
+                    <div style="font-size:0.85em;color:#555">O CMV está em 58%. Se reduzir pra 35%, economiza R$9,765.65/mês. Como: negocie descontos por volume, avalie fornecedores alternativos, compre só o que gira rápido.</div>
+                </div><div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;border-left:3px solid #666">
+                    <div style="font-weight:600;margin-bottom:4px">📦 Girar estoque parado antes de comprar novo</div>
+                    <div style="font-size:0.85em;color:#555">Antes de cada pedido novo, levante o que está encalhado. Promoção pra girar estoque antigo libera caixa e espaço. Regra: só comprar produto novo se o atual girou 70%+.</div>
+                </div><div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;border-left:3px solid #666">
+                    <div style="font-weight:600;margin-bottom:4px">💳 Migrar Pix → Boleto 30/60/90 dias</div>
+                    <div style="font-size:0.85em;color:#555">16 de 38 compras foram no Pix (pagamento imediato). Negociando boleto 30/60/90 dias, o dinheiro fica no caixa mais tempo. Priorize: fornecedores negociáveis (Naturalles, Haskell, Segali).</div>
+                </div><div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;border-left:3px solid #666">
+                    <div style="font-weight:600;margin-bottom:4px">💜 Meta Nubank R$50k — faltam R$31,454.64</div>
+                    <div style="font-size:0.85em;color:#555">Mantendo R$500/semana, a meta é atingida em ~63 semanas (16 meses). Nas semanas boas, tente transferir R$1.000 pra acelerar.</div>
+                </div><div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:8px;border-left:3px solid #666">
+                    <div style="font-weight:600;margin-bottom:4px">🎁 Aumentar ticket médio com combos e kits <span style="color:#324D38;font-weight:600">+R$2.000,00/mês</span></div>
+                    <div style="font-size:0.85em;color:#555">Cada R$10 a mais por venda, em 200 vendas/mês, são R$2.000 extras de faturamento sem custo adicional de marketing. Monte kits atrativos com margem boa.</div>
+                </div>
+            </div>
+            <div style="background:rgba(100,100,100,0.04);border-radius:14px;padding:18px;margin-bottom:18px;border:2px dashed rgba(100,100,100,0.3)">
+                <h3 style="margin-top:0;color:#444">📦 Plano de Compras — Fornecedores do Mês</h3>
+                
+                <div style="display:flex;gap:8px;margin-bottom:14px"><div style="flex:1;background:#e8f5e9;border-radius:10px;padding:10px;text-align:center;position:relative"><div style="font-size:.75em;opacity:.7">Fev</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">R$14.218,26</div><div style="font-size:.72em">✅ </div></div><div style="flex:1;background:#ffebee;border-radius:10px;padding:10px;text-align:center;position:relative"><div style="font-size:.75em;opacity:.7">Mar</div><div style="font-size:1.1em;font-weight:700;color:#c62828">R$89.130,03</div><div style="font-size:.72em">🔴 ⚠️</div></div><div style="flex:1;background:#fff3e0;border-radius:10px;padding:10px;text-align:center;position:relative"><div style="font-size:.75em;opacity:.7">Abr</div><div style="font-size:1.1em;font-weight:700;color:#e65100">R$23.954,82</div><div style="font-size:.72em">⚠️ </div></div><div style="flex:1;background:#e8f5e9;border-radius:10px;padding:10px;text-align:center;position:relative"><div style="font-size:.75em;opacity:.7">Mai</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">R$10.983,49</div><div style="font-size:.72em">✅ </div></div><div style="flex:1;background:#e8f5e9;border-radius:10px;padding:10px;text-align:center;position:relative"><div style="font-size:.75em;opacity:.7">Jun</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">R$11.686,74</div><div style="font-size:.72em">✅ </div></div></div>
+                <div style="background:rgba(50,77,56,0.04);border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                            <div style="font-weight:700;font-size:0.95em;color:#324D38">✅ ✅ OK — Fevereiro</div>
+                            <span style="background:#324D38;color:#fff;padding:4px 8px;border-radius:8px;font-size:0.72em;font-weight:600;text-transform:uppercase">ok</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.5);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em;white-space:pre-wrap">
+                            Ano passado: R$83,698.75 | Hoje: R$14,218.26 | Economia: 83%
+Você está controlando melhor as compras! Parabéns.
+                        </div>
+                        <div style="background:rgba(255,255,255,0.3);border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #324D38">
+                            <strong>💡 Recomendação:</strong> Continue assim. Mantenha o rigor.
+                        </div>
+                    </div><div style="background:rgba(230,168,52,0.08);border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #E6A834;border-left:4px solid #E6A834">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                            <div style="font-weight:700;font-size:0.95em;color:#E6A834">🟡 ⚠️ ATENÇÃO — Março</div>
+                            <span style="background:#E6A834;color:#fff;padding:4px 8px;border-radius:8px;font-size:0.72em;font-weight:600;text-transform:uppercase">atencao</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.5);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em;white-space:pre-wrap">
+                            Ano passado: R$73,037.05 | Hoje: R$89,130.03 | Diferença: +22%
+Você está acima do histórico. Cuidado para não repetir padrão de overspending.
+                        </div>
+                        <div style="background:rgba(255,255,255,0.3);border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #E6A834">
+                            <strong>💡 Recomendação:</strong> Monitore de perto e reduza novos pedidos se a receita não aumentar.
+                        </div>
+                    </div><div style="background:rgba(50,77,56,0.04);border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                            <div style="font-weight:700;font-size:0.95em;color:#324D38">✅ ✅ OK — Abril</div>
+                            <span style="background:#324D38;color:#fff;padding:4px 8px;border-radius:8px;font-size:0.72em;font-weight:600;text-transform:uppercase">ok</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.5);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em;white-space:pre-wrap">
+                            Ano passado: R$79,148.01 | Hoje: R$23,954.82 | Economia: 70%
+Você está controlando melhor as compras! Parabéns.
+                        </div>
+                        <div style="background:rgba(255,255,255,0.3);border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #324D38">
+                            <strong>💡 Recomendação:</strong> Continue assim. Mantenha o rigor.
+                        </div>
+                    </div><div style="background:rgba(50,77,56,0.04);border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                            <div style="font-weight:700;font-size:0.95em;color:#324D38">✅ ✅ OK — Maio</div>
+                            <span style="background:#324D38;color:#fff;padding:4px 8px;border-radius:8px;font-size:0.72em;font-weight:600;text-transform:uppercase">ok</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.5);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em;white-space:pre-wrap">
+                            Ano passado: R$94,585.16 | Hoje: R$10,983.49 | Economia: 88%
+Você está controlando melhor as compras! Parabéns.
+                        </div>
+                        <div style="background:rgba(255,255,255,0.3);border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #324D38">
+                            <strong>💡 Recomendação:</strong> Continue assim. Mantenha o rigor.
+                        </div>
+                    </div><div style="background:rgba(50,77,56,0.04);border-radius:12px;padding:14px;margin-bottom:10px;border:2px solid #324D38;border-left:4px solid #324D38">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                            <div style="font-weight:700;font-size:0.95em;color:#324D38">✅ ✅ OK — Junho</div>
+                            <span style="background:#324D38;color:#fff;padding:4px 8px;border-radius:8px;font-size:0.72em;font-weight:600;text-transform:uppercase">ok</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.5);border-radius:8px;padding:10px;margin-bottom:10px;font-size:0.85em;white-space:pre-wrap">
+                            Ano passado: R$90,764.29 | Hoje: R$11,686.74 | Economia: 87%
+Você está controlando melhor as compras! Parabéns.
+                        </div>
+                        <div style="background:rgba(255,255,255,0.3);border-radius:8px;padding:10px;font-size:0.82em;border-left:3px solid #324D38">
+                            <strong>💡 Recomendação:</strong> Continue assim. Mantenha o rigor.
+                        </div>
+                    </div>
+                <div style="background:linear-gradient(135deg,#2d5a3e,#3d7a52);border-radius:12px;padding:14px;margin-bottom:14px;color:#fff;text-align:center">
+                    <div style="font-size:.85em;opacity:.8">🏆 Janela de Ouro pra vencimentos</div>
+                    <div style="font-size:1.4em;font-weight:700;margin:6px 0">Semana 04 a 08/05</div>
+                    <div style="font-size:.82em;opacity:.7">Apenas R$0,00 em contas previstas</div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #eee">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:1em">🟣 Haskell (BL Distribuidora)</div>
+                        <span style="padding:3px 8px;border-radius:12px;font-size:.72em;font-weight:600;background:#e8f5e9;color:#2e7d32">Baixo</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;font-size:.82em">
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Histórico</span><br><strong>R$2,046.58/pedido (24x)</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Valor</span><br>R$4.000 a R$5.000</div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Previsto</span><br><strong>R$21.970,70</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Prazos</span><br><strong>45/60/75d ✨</strong></div>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;font-size:.84em;margin-bottom:8px"><thead><tr style="border-bottom:2px solid #eee"><th style="text-align:left;padding:6px;color:#666">Prazo</th><th style="text-align:left;padding:6px;color:#666">Vence em</th><th style="text-align:right;padding:6px;color:#666">Semana já tem</th><th style="text-align:left;padding:6px;color:#666">Viável?</th></tr></thead><tbody><tr style="background:#e8f5e9"><td><strong>45d</strong></td><td>Sex 10/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$3.930,97</td><td style="color:#2e7d32;font-weight:600">✅ Boa janela</td></tr><tr style=""><td><strong>60d</strong></td><td>Seg 27/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$10.277,33</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr><tr style="background:#e8f5e9"><td><strong>75d</strong></td><td>Seg 11/05</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$5.983,49</td><td style="color:#2e7d32;font-weight:600">✅ Boa janela</td></tr></tbody></table>
+                    <div style="background:#f5f5f5;border-radius:6px;padding:10px;font-size:.85em;border-left:3px solid #666">👉 Negociar <strong>45/75 dias</strong>. 1ª parcela: 10/04.</div>
+                    
+                </div><div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #eee">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:1em">🟡 Bothânico</div>
+                        <span style="padding:3px 8px;border-radius:12px;font-size:.72em;font-weight:600;background:#fff3e0;color:#e65100">Médio</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;font-size:.82em">
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Histórico</span><br><strong>Sem histórico</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Valor</span><br>Conservador (1º pedido)</div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Previsto</span><br><strong>Nenhum</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Prazos</span><br><strong>45/60/75d ✨</strong></div>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;font-size:.84em;margin-bottom:8px"><thead><tr style="border-bottom:2px solid #eee"><th style="text-align:left;padding:6px;color:#666">Prazo</th><th style="text-align:left;padding:6px;color:#666">Vence em</th><th style="text-align:right;padding:6px;color:#666">Semana já tem</th><th style="text-align:left;padding:6px;color:#666">Viável?</th></tr></thead><tbody><tr style="background:#e8f5e9"><td><strong>45d</strong></td><td>Sex 10/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$3.930,97</td><td style="color:#2e7d32;font-weight:600">✅ Boa janela</td></tr><tr style=""><td><strong>60d</strong></td><td>Seg 27/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$10.277,33</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr><tr style="background:#e8f5e9"><td><strong>75d</strong></td><td>Seg 11/05</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$5.983,49</td><td style="color:#2e7d32;font-weight:600">✅ Boa janela</td></tr></tbody></table>
+                    <div style="background:#f5f5f5;border-radius:6px;padding:10px;font-size:.85em;border-left:3px solid #666">👉 Negociar <strong>45/75 dias</strong>. 1ª parcela: 10/04.</div>
+                    <div style="background:#fff3e0;border-radius:6px;padding:8px 10px;font-size:.82em;margin-top:6px;border-left:3px solid #e65100">Fornecedor novo — testar giro antes de escalar.</div>
+                </div><div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #eee">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:1em">🟣 Glatten (Elos Cosméticos)</div>
+                        <span style="padding:3px 8px;border-radius:12px;font-size:.72em;font-weight:600;background:#e8f5e9;color:#2e7d32">Baixo</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;font-size:.82em">
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Histórico</span><br><strong>R$2,154.25/pedido (16x)</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Valor</span><br>R$4.000 a R$6.000</div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Previsto</span><br><strong>R$5.801,28</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Prazos</span><br><strong>45/60/75d</strong></div>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;font-size:.84em;margin-bottom:8px"><thead><tr style="border-bottom:2px solid #eee"><th style="text-align:left;padding:6px;color:#666">Prazo</th><th style="text-align:left;padding:6px;color:#666">Vence em</th><th style="text-align:right;padding:6px;color:#666">Semana já tem</th><th style="text-align:left;padding:6px;color:#666">Viável?</th></tr></thead><tbody><tr style="background:#e8f5e9"><td><strong>45d</strong></td><td>Sex 10/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$3.930,97</td><td style="color:#2e7d32;font-weight:600">✅ Boa janela</td></tr><tr style=""><td><strong>60d</strong></td><td>Seg 27/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$10.277,33</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr><tr style="background:#e8f5e9"><td><strong>75d</strong></td><td>Seg 11/05</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$5.983,49</td><td style="color:#2e7d32;font-weight:600">✅ Boa janela</td></tr></tbody></table>
+                    <div style="background:#f5f5f5;border-radius:6px;padding:10px;font-size:.85em;border-left:3px solid #666">👉 Negociar <strong>45/75 dias</strong>. 1ª parcela: 10/04.</div>
+                    
+                </div><div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #eee">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:1em">🔴 Salon Line (Lançamento)</div>
+                        <span style="padding:3px 8px;border-radius:12px;font-size:.72em;font-weight:600;background:#ffebee;color:#c62828">Alto</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;font-size:.82em">
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Histórico</span><br><strong>R$2,566.30/pedido (5x)</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Valor</span><br><strong style="color:#e65100">R$6.102,72</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Previsto</span><br><strong>Nenhum</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Prazos</span><br><strong>30/45/60d</strong></div>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;font-size:.84em;margin-bottom:8px"><thead><tr style="border-bottom:2px solid #eee"><th style="text-align:left;padding:6px;color:#666">Prazo</th><th style="text-align:left;padding:6px;color:#666">Vence em</th><th style="text-align:right;padding:6px;color:#666">Semana já tem</th><th style="text-align:left;padding:6px;color:#666">Viável?</th></tr></thead><tbody><tr style=""><td><strong>30d</strong></td><td>Qui 26/03</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$10.956,72</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr><tr style="background:#e8f5e9"><td><strong>45d</strong></td><td>Sex 10/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$3.930,97</td><td style="color:#2e7d32;font-weight:600">✅ Boa janela</td></tr><tr style=""><td><strong>60d</strong></td><td>Seg 27/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$10.277,33</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr></tbody></table>
+                    <div style="background:#f5f5f5;border-radius:6px;padding:10px;font-size:.85em;border-left:3px solid #666">👉 Negociar <strong>45 dias</strong>. 1ª parcela: 10/04.</div>
+                    <div style="background:#fff3e0;border-radius:6px;padding:8px 10px;font-size:.82em;margin-top:6px;border-left:3px solid #e65100">Lançamento = risco de encalhe. Avaliar se giro justifica o valor.</div>
+                </div><div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #eee">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:1em">🟡 Nutrimaxxi</div>
+                        <span style="padding:3px 8px;border-radius:12px;font-size:.72em;font-weight:600;background:#fff3e0;color:#e65100">Médio</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;font-size:.82em">
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Histórico</span><br><strong>Sem histórico</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Valor</span><br>Baseado no giro</div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Previsto</span><br><strong>Nenhum</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Prazos</span><br><strong>30/35/45/60d</strong></div>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;font-size:.84em;margin-bottom:8px"><thead><tr style="border-bottom:2px solid #eee"><th style="text-align:left;padding:6px;color:#666">Prazo</th><th style="text-align:left;padding:6px;color:#666">Vence em</th><th style="text-align:right;padding:6px;color:#666">Semana já tem</th><th style="text-align:left;padding:6px;color:#666">Viável?</th></tr></thead><tbody><tr style=""><td><strong>30d</strong></td><td>Qui 26/03</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$10.956,72</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr><tr style=""><td><strong>35d</strong></td><td>Ter 31/03</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$13.053,51</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr><tr style="background:#e8f5e9"><td><strong>45d</strong></td><td>Sex 10/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$3.930,97</td><td style="color:#2e7d32;font-weight:600">✅ Boa janela</td></tr><tr style=""><td><strong>60d</strong></td><td>Seg 27/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$10.277,33</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr></tbody></table>
+                    <div style="background:#f5f5f5;border-radius:6px;padding:10px;font-size:.85em;border-left:3px solid #666">👉 Negociar <strong>45 dias</strong>. 1ª parcela: 10/04.</div>
+                    <div style="background:#fff3e0;border-radius:6px;padding:8px 10px;font-size:.82em;margin-top:6px;border-left:3px solid #e65100">Prazo negociável. Se só aceitar 30d, tente: 'começa 30 mas a partir de abril?'</div>
+                </div><div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #eee">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:1em">🟣 DPC Distribuidora</div>
+                        <span style="padding:3px 8px;border-radius:12px;font-size:.72em;font-weight:600;background:#e8f5e9;color:#2e7d32">Baixo</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;font-size:.82em">
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Histórico</span><br><strong>R$1,171.06/pedido (18x)</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Valor</span><br>R$1.000 a R$1.500</div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Previsto</span><br><strong>R$1.091,04</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Prazos</span><br><strong>30/35/40d</strong></div>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;font-size:.84em;margin-bottom:8px"><thead><tr style="border-bottom:2px solid #eee"><th style="text-align:left;padding:6px;color:#666">Prazo</th><th style="text-align:left;padding:6px;color:#666">Vence em</th><th style="text-align:right;padding:6px;color:#666">Semana já tem</th><th style="text-align:left;padding:6px;color:#666">Viável?</th></tr></thead><tbody><tr style=""><td><strong>30d</strong></td><td>Qui 26/03</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$10.956,72</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr><tr style=""><td><strong>35d</strong></td><td>Ter 31/03</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$13.053,51</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr><tr style="background:#e8f5e9"><td><strong>40d</strong></td><td>Seg 06/04</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$3.930,97</td><td style="color:#2e7d32;font-weight:600">✅ Boa janela</td></tr></tbody></table>
+                    <div style="background:#f5f5f5;border-radius:6px;padding:10px;font-size:.85em;border-left:3px solid #666">👉 Negociar <strong>40 dias</strong>. 1ª parcela: 06/04.</div>
+                    <div style="background:#fff3e0;border-radius:6px;padding:8px 10px;font-size:.82em;margin-top:6px;border-left:3px solid #e65100">Se não aceitar 40d, segurar 1 semana e pedir 35.</div>
+                </div><div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1px solid #eee">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+                        <div style="font-weight:700;font-size:1em">🔴 DRL</div>
+                        <span style="padding:3px 8px;border-radius:12px;font-size:.72em;font-weight:600;background:#ffebee;color:#c62828">Alto</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;font-size:.82em">
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Histórico</span><br><strong>R$1,316.70/pedido (4x)</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Valor</span><br>Mínimo necessário</div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Previsto</span><br><strong>Nenhum</strong></div>
+                        <div style="background:#f8f8f8;padding:6px 8px;border-radius:6px"><span style="color:#888">Prazos</span><br><strong>21/30/35d</strong></div>
+                    </div>
+                    <table style="width:100%;border-collapse:collapse;font-size:.84em;margin-bottom:8px"><thead><tr style="border-bottom:2px solid #eee"><th style="text-align:left;padding:6px;color:#666">Prazo</th><th style="text-align:left;padding:6px;color:#666">Vence em</th><th style="text-align:right;padding:6px;color:#666">Semana já tem</th><th style="text-align:left;padding:6px;color:#666">Viável?</th></tr></thead><tbody><tr style=""><td><strong>21d</strong></td><td>Ter 17/03</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$21.326,25</td><td style="color:#c62828;font-weight:600">⛔ Semana pesada demais</td></tr><tr style=""><td><strong>30d</strong></td><td>Qui 26/03</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$10.956,72</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr><tr style=""><td><strong>35d</strong></td><td>Ter 31/03</td><td style="text-align:right;font-variant-numeric:tabular-nums">R$13.053,51</td><td style="color:#e65100;font-weight:600">⚠️ Semana carregada</td></tr></tbody></table>
+                    <div style="background:#f5f5f5;border-radius:6px;padding:10px;font-size:.85em;border-left:3px solid #666">👉 ⚠️ Todos os prazos caem em semana pesada. Considere esperar 1 semana pra liberar.</div>
+                    <div style="background:#fff3e0;border-radius:6px;padding:8px 10px;font-size:.82em;margin-top:6px;border-left:3px solid #e65100">Prazo ruim. Tentar 'prazo especial' começando em 30. Se não, esperar 1 semana pra liberar.</div>
+                </div>
+                <h4 style="text-align:center;margin:14px 0 8px;color:#666">📋 Resumo Rápido</h4>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-bottom:12px"><div style="background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid #eee"><div style="font-weight:600;font-size:.82em">Haskell</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">45/75</div><div style="font-size:.72em;color:#888">1ª: 10/04</div></div><div style="background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid #eee"><div style="font-weight:600;font-size:.82em">Bothânico</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">45/75</div><div style="font-size:.72em;color:#888">1ª: 10/04</div></div><div style="background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid #eee"><div style="font-weight:600;font-size:.82em">Glatten</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">45/75</div><div style="font-size:.72em;color:#888">1ª: 10/04</div></div><div style="background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid #eee"><div style="font-weight:600;font-size:.82em">Salon Line</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">45</div><div style="font-size:.72em;color:#888">1ª: 10/04</div></div><div style="background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid #eee"><div style="font-weight:600;font-size:.82em">Nutrimaxxi</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">45</div><div style="font-size:.72em;color:#888">1ª: 10/04</div></div><div style="background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid #eee"><div style="font-weight:600;font-size:.82em">DPC Distribuido</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">40</div><div style="font-size:.72em;color:#888">1ª: 06/04</div></div><div style="background:#fff;border-radius:8px;padding:10px;text-align:center;border:1px solid #eee"><div style="font-weight:600;font-size:.82em">DRL</div><div style="font-size:1.1em;font-weight:700;color:#2e7d32">Esperar</div><div style="font-size:.72em;color:#888">1ª: ?</div></div></div>
+                <div style="background:linear-gradient(135deg,#1a1a2e,#2d2d44);border-radius:10px;padding:14px;color:#fff;font-size:.85em">
+                    <strong>📏 Regras de Ouro:</strong><br>
+                    → Nenhum vencimento novo em março. Tudo a partir de abril.<br>
+                    → Prazo livre? Use 45/60/75 sempre.<br>
+                    → Fornecedor novo? Pedido conservador.<br>
+                    → Não conseguiu prazo bom? Reduza o pedido ao mínimo.
+                </div>
+            </div>
+            <div style="margin-top:14px">
+                <div class="mensagem-texto" id="msgFinTexto" style="max-height:400px;font-size:0.82em;white-space:pre-line">📋 *CONTAS A PAGAR NA SEMANA*
+Semana 23/02 a 27/02/2026
+Saldo em caixa: R$  7,928.15
+_________
+*SEGUNDA-FEIRA 23/02*
+Zerado
+*TOTAL*                                   R$      0.00
+_________
+*TERÇA-FEIRA 24/02*
+Zerado
+*TOTAL*                                   R$      0.00
+_________
+*QUARTA-FEIRA 25/02*
+ALUGUEL LOJA   02/12                      R$  2,500.00
+ALUGUEL LOJA   02/12 [CAIXA LOJA]         R$  2,500.00
+[EMPRESTIMO - BERNARDO] REF NF SANTA C    R$  1,876.00
+[PLANO DE SAÚDE E ODONTOLÓGICO] - SAMP    R$    230.88
+[SICOOB] - TAXA DE BANCO                  R$     30.85
+*TOTAL*                                   R$  7,137.73
+  → Caixa após:                    R$    790.42
+_________
+*QUINTA-FEIRA 26/02*
+Compra de Mercadoria - NF 9161 1/3        R$  1,808.20
+Compra de Mercadoria - NF 36178 3/6       R$  1,696.18
+*TOTAL*                                   R$  3,504.38
+  → Caixa após:                    R$ -2,713.96
+_________
+*SEXTA-FEIRA 27/02*
+Compra de Mercadoria - NF 17015 3/3       R$  1,633.47
+Compra de Mercadoria - NF 20720 3/3       R$  1,128.29
+Compra de Mercadoria - NF 48333 3/4       R$    599.39
+[MARKETING] [EMBALA FLEX] - Sacolas 1/    R$    215.00
+*TOTAL*                                   R$  3,576.15
+  → Caixa após:                    R$ -6,290.11
+_________
+
+💰 *TOTAL DA SEMANA:               R$ 14,218.26*
+
+📌 *DECISÕES DA SEMANA:*
+💜 Nubank: ❌ NÃO transferir essa semana (acumula pra próxima)
+📣 Tráfego: ⏸️ Segurar campanhas essa semana
+
+🤝 *NEGOCIAR ADIAMENTO:*
+  → ALUGUEL LOJA   02/12    R$  2,500.00
+      vence 25/02 → adiar p/ *18/03*
+  → ALUGUEL LOJA   02/12    R$  2,500.00
+      vence 25/02 → adiar p/ *24/03*
+  → NATURALLES              R$  1,808.20
+      vence 26/02 → adiar p/ *26/03*
+  → BL DISTRIBUIDORA (HASKE R$  1,696.18
+      vence 26/02 → adiar p/ *12/03*
+  *Total a negociar*                      R$  8,504.38</div>
+                <button class="btn-copiar" id="btnCopiarFin" onclick="copiarFinanceiro()" style="background:linear-gradient(135deg,#666,#888);margin-top:10px">📋 Copiar p/ WhatsApp</button>
+            </div>
+        </div>
+    <div class="mensagem-section">
+        <h2>📋 Mensagem para o Grupo</h2>
+        <div class="mensagem-texto" id="msgTexto">Teste de renderização</div>
+        <button class="btn-copiar" id="btnCopiar" onclick="copiarMensagem()">📋 Copiar Mensagem</button>
+    </div>
+    <div class="footer"><span style="font-size:1.2em">🌿</span><br>Bem Me Quer Cosméticos — Gerado em 24/02/2026</div>
+</div>
+<script>
+function copiarMensagem() {
+    const msg = `Teste de renderização`;
+    navigator.clipboard.writeText(msg).then(() => {
+        const btn = document.getElementById('btnCopiar');
+        btn.textContent = '✅ Copiado!';
+        btn.classList.add('copiado');
+        setTimeout(() => { btn.textContent = '📋 Copiar Mensagem'; btn.classList.remove('copiado'); }, 2500);
+    });
+}
+function copiarFinanceiro() {
+    const el = document.getElementById('msgFinTexto');
+    if (el) {
+        navigator.clipboard.writeText(el.textContent).then(() => {
+            const btn = document.getElementById('btnCopiarFin');
+            btn.textContent = '✅ Copiado!';
+            btn.classList.add('copiado');
+            setTimeout(() => { btn.textContent = '📋 Copiar Contas a Pagar'; btn.classList.remove('copiado'); }, 2500);
+        });
+    }
+}
+document.addEventListener('DOMContentLoaded', () => {
+    const bar = document.querySelector('.progress-bar');
+    const w = bar.style.width; bar.style.width = '0%';
+    setTimeout(() => { bar.style.width = w; }, 300);
+});
+</script>
+</body></html>

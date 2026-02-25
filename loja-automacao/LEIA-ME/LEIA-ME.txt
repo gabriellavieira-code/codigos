@@ -1,0 +1,297 @@
+================================================================
+  🌿 BEM ME QUER — GUIA RÁPIDO DE USO
+  Sistema de Relatórios: Vendas + Serviços + Financeiro
+================================================================
+
+📂 PASTA DO PROJETO:
+   C:\Users\gaabi\OneDrive\Desktop\Codigos\loja-automacao
+
+
+════════════════════════════════════════════════════════════════
+  COMANDOS PARA RODAR
+════════════════════════════════════════════════════════════════
+
+1️⃣  RELATÓRIO SEMANAL (rodar toda segunda-feira)
+    ─────────────────────────────────────────────
+    python relatorio_semanal.py
+
+    O que faz:
+    • Puxa vendas acumuladas do mês
+    • Compara com ano anterior
+    • Mostra semana passada vs ano anterior
+    • Mostra referência da semana atual (ano passado)
+    • Calcula meta diária restante
+    • Acumula semana no histórico
+    • Análise de serviços (sobrancelha) — semana + mês
+    • Impacto da profissional nas vendas de produtos
+    • Clientes recorrentes e novas
+    • 💰 FINANCEIRO: Contas a pagar da semana (seg a sex)
+      - Saldo progressivo dia a dia
+      - Previsão de entrada baseada no histórico
+      - Decisão Nubank (transferir ou não)
+      - Decisão Meta Ads (investir ou pausar)
+      - Sugestão de adiamentos com melhores datas
+      - Mensagem pronta pro WhatsApp (valores alinhados)
+    • 🛒 COMPRAS (a partir do dia 20): Bloco de planejamento
+      - Teto de compra (35% do faturamento previsto)
+      - Quanto já está comprometido / disponível
+      - CMV real do mês vs teto
+      - Ranking de fornecedores com média e prazos
+      - Semanas mais leves pra agendar vencimentos
+    • Abre HTML com botão de copiar mensagem
+
+
+2️⃣  FECHAMENTO MENSAL (último dia útil ou quando quiser)
+    ─────────────────────────────────────────────────────
+    python relatorio_semanal.py --fechamento
+
+    O que faz (tudo do semanal + extras):
+    • Ticket médio diário
+    • Melhor e pior dia da semana
+    • TOP 5 dias de venda
+    • Dias mais fracos
+    • Tendência do mês (melhorou ou piorou?)
+    • "Vale a pena abrir?" — dias com vendas muito baixas
+    • Comparativo justo por dia aberto (não por dia útil)
+    • Histórico completo de todas as semanas
+    • Ausências da equipe
+    • Análise completa de serviços do mês
+    • 📊 RESUMÃO FINANCEIRO DO MÊS:
+      - Faturamento vs Compras (CMV real vs teto 35%)
+      - Ranking de fornecedores: quem recebeu mais
+      - Saídas por categoria
+      - ✅ Acertos do mês / ⚠️ Melhorias necessárias
+    • Mensagem de fechamento para o grupo
+
+
+════════════════════════════════════════════════════════════════
+  PERGUNTAS QUE O SCRIPT FAZ QUANDO RODAR
+════════════════════════════════════════════════════════════════
+
+❓ "Houve algum dia EXTRA que a loja fechou?"
+   → Aperte ENTER para pular
+   → Ou digite os dias: 5,12,20
+
+❓ "Quer registrar ausência de algum colaborador?"
+   → Aperte ENTER para pular
+   → Ou digite: Nome, motivo, dia_inicio, dia_fim
+   → Exemplo: Leide, atestado, 10, 12
+
+
+════════════════════════════════════════════════════════════════
+  ARQUIVOS DO PROJETO
+════════════════════════════════════════════════════════════════
+
+📄 relatorio_semanal.py      → Script principal (NÃO MEXER)
+📄 servicos_analise.py       → Módulo de serviços (NÃO MEXER)
+📄 financeiro_analise.py     → Módulo financeiro (NÃO MEXER)
+📄 relatorio.html             → Relatório gerado (abre no navegador)
+📄 logo.png                   → Logo da Bem Me Quer
+📁 credentials/               → Credenciais do Google (NÃO MEXER)
+
+📄 equipe_ausencias.json      → Ausências da equipe (pode editar)
+📄 historico_FEVEREIRO26.json  → Histórico de fev/26 (automático)
+📄 historico_MARÇO26.json      → Será criado automaticamente
+📄 fechamentos_extras_*.json   → Dias extras que fechou (automático)
+
+
+════════════════════════════════════════════════════════════════
+  PLANILHAS CONECTADAS
+════════════════════════════════════════════════════════════════
+
+📊 Planilha de VENDAS (acompanhamento diário):
+   → Aba por mês: FEVEREIRO26, MARCO26, etc.
+   → Contém: produtos vendidos, serviços, valores diários
+
+💆 Planilha de SERVIÇOS (sobrancelha):
+   → Aba por mês: FEVEREIRO/26, MARÇO/25, etc.
+   → Contém: clientes atendidas, tipo, valor, pagamento
+   → ⚠️ IMPORTANTE: Precisa estar compartilhada com a
+     conta de serviço (mesmo email da planilha de vendas)
+
+💰 Planilha FINANCEIRA (offline, no Desktop):
+   → Arquivo: ok_BMQ_2025__-_GESTÃO_FINANCEIRA.xlsx
+   → Local: Desktop (sempre no mesmo lugar!)
+   → Abas usadas: LP (contas a pagar), FCD (fluxo de caixa)
+   → O script lê automaticamente — basta manter atualizada
+
+
+════════════════════════════════════════════════════════════════
+  REGRAS DE VIABILIDADE — ESTUDO BEM ME QUER
+════════════════════════════════════════════════════════════════
+
+Regras embutidas no sistema (baseadas na análise financeira):
+
+🎯 METAS DE FATURAMENTO:
+   • Mínimo seguro: R$ 72.000/mês
+   • Ideal: R$ 80.000/mês
+   • Meta crescimento: +25%
+
+💰 TETO DE COMPRAS:
+   • Máximo 35% do faturamento (CMV)
+   • Ex: Se faturar R$75k → comprar até R$26.250
+   • O sistema alerta quando ultrapassa
+
+📌 DECISÕES SEMANAIS AUTOMÁTICAS:
+   • Nubank: R$500/sem → transferir ou acumular
+   • Meta Ads: R$100/sem → investir ou pausar
+   • Adiamentos: sugere melhores datas
+
+🛒 BLOCO COMPRAS (dia 20 a 25):
+   • Teto calculado pro mês seguinte
+   • Quanto já está comprometido
+   • Quanto pode liberar
+   • Ranking de fornecedores com prazos
+
+📊 FECHAMENTO (resumão):
+   • CMV real vs teto
+   • Acertos e melhorias
+   • Top fornecedores do mês
+
+
+════════════════════════════════════════════════════════════════
+  SEÇÃO DE SERVIÇOS — O QUE APARECE
+════════════════════════════════════════════════════════════════
+
+A seção verde no relatório mostra:
+
+📅 RESUMO DA SEMANA
+   • Quantas pagaram sobrancelha (R$25/R$30) + ticket
+   • Quantas compraram produto e ganharam sobrancelha + ticket
+   • Total de atendimentos na semana
+
+📊 ACUMULADO DO MÊS
+   • Total de atendimentos e custo da profissional
+   • Receita de serviços vs receita de compras (separados)
+   • Resultado: serviço - custo (com caixinha "Traduzindo")
+   • Taxa de conversão (% que comprou produto)
+
+🔍 IMPACTO DA PROFISSIONAL
+   • Compara vendas de PRODUTOS nos dias COM profissional
+     (ter/qui/sex) vs dias SEM (seg/qua/sáb)
+   • Mostra se ela atrai clientes que compram
+
+📉 ALERTA DE QUEDA
+   • Se os atendimentos caíram 25%+ de uma semana pra outra,
+     aparece alerta com sugestões de ação
+
+💳 FORMAS DE PAGAMENTO
+   • Ranking: Pix, Dinheiro, Cartão Crédito, Débito
+
+👥 CLIENTES
+   • Novas vs retorno (já vieram antes)
+   • Top 10 mais fiéis desde agosto/2024
+
+📈 COMPARATIVO
+   • Mês anterior e mesmo mês do ano passado
+
+
+════════════════════════════════════════════════════════════════
+  CUSTOS DA PROFISSIONAL
+════════════════════════════════════════════════════════════════
+
+O custo da diária é calculado automaticamente:
+   • Até março/2026:  R$180/dia
+   • A partir de abril/2026:  R$190/dia
+   • Dias: terça, quinta, sexta (fixos)
+
+⚠️ Se o valor mudar, edite no servicos_analise.py:
+   Linhas 14-15 (CUSTO_DIARIA_ANTIGO e CUSTO_DIARIA_NOVO)
+   Linha 16 (DATA_MUDANCA_DIARIA)
+
+
+════════════════════════════════════════════════════════════════
+  QUANDO MUDAR DE MÊS
+════════════════════════════════════════════════════════════════
+
+1. Crie a nova aba na planilha de VENDAS
+   Nomes aceitos (exemplo março):
+   → MARÇO26  ou  MARCO26  ou  MAR26
+
+2. Crie a nova aba na planilha de SERVIÇOS
+   Formato padrão: MARÇO/26
+
+3. O script detecta automaticamente!
+   Na última semana do mês ele avisa se a aba
+   do próximo mês ainda não existe.
+
+
+════════════════════════════════════════════════════════════════
+  REGISTRAR AUSÊNCIAS (sem rodar o script)
+════════════════════════════════════════════════════════════════
+
+Abra o arquivo equipe_ausencias.json e adicione:
+
+  {
+    "nome": "Nome",
+    "motivo": "férias",
+    "dia_inicio": 1,
+    "dia_fim": 15,
+    "mes": 3,
+    "ano": 2026
+  }
+
+Lembre de colocar vírgula entre os registros!
+
+
+════════════════════════════════════════════════════════════════
+  DÚVIDAS / PROBLEMAS
+════════════════════════════════════════════════════════════════
+
+❌ "Aba não encontrada" (vendas)
+   → Verifique o nome da aba na planilha (MARÇO26, MAR26, etc)
+
+❌ "Aba de serviços não encontrada"
+   → Verifique o nome da aba (MARÇO/26, MARÇO/2026, etc)
+   → Verifique se a planilha está compartilhada com a conta
+
+❌ "Módulo servicos_analise.py não encontrado"
+   → O arquivo servicos_analise.py precisa estar na mesma
+     pasta que o relatorio_semanal.py
+
+❌ "Erro de credenciais"
+   → Verifique se a pasta credentials/ tem o service_account.json
+
+❌ Números errados
+   → Confira se ambas as planilhas estão compartilhadas
+     com a conta de serviço
+
+💡 Para qualquer dúvida, volte na conversa do Claude!
+
+
+================================================================
+  Última atualização: Fevereiro/2026 — Bloco 4 (Financeiro)
+================================================================
+
+════════════════════════════════════════════════════════════════
+  PLANO DE COMPRAS — FORNECEDORES DO MÊS
+════════════════════════════════════════════════════════════════
+
+Toda vez que for planejar compras com fornecedores:
+
+1. Abra o arquivo fornecedores_mes.py (na mesma pasta)
+2. Edite a lista com os fornecedores do mês:
+   - nome: nome do fornecedor
+   - prazos: lista de prazos em dias (ex: [30, 45, 60])
+   - prazo_livre: True se vocês escolhem o prazo
+   - valor_sugerido: texto com faixa de valor
+   - valor_orcado: valor exato se já tiver orçamento
+   - observacao: alertas ou dicas
+
+3. Rode o relatório normalmente:
+   python relatorio_semanal.py
+
+4. O plano aparece automaticamente na Área Cinzenta com:
+   - Timeline de carga mensal (março/abril/maio)
+   - Janela de ouro (semana mais leve)
+   - Card por fornecedor com simulação de prazos
+   - Resumo rápido com prazo ideal
+   - Regras de ouro
+
+ARQUIVOS DA PASTA:
+  relatorio_semanal.py   → Script principal (roda tudo)
+  financeiro_analise.py  → Módulo financeiro
+  servicos_analise.py    → Módulo de serviços
+  vendas_analise.py      → Módulo de vendas
+  fornecedores_mes.py    → Fornecedores do mês (EDITAR!)
+  credentials/           → Credenciais Google

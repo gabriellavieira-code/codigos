@@ -1,0 +1,190 @@
+{
+  "semanas": [
+    {
+      "periodo": "02/02 a 07/02",
+      "vendas": 22979.08,
+      "vendas_ant": 16595.18,
+      "diferenca": 6383.9,
+      "percentual": 38.5,
+      "data_registro": "2026-02-07"
+    },
+    {
+      "periodo": "09/02 a 14/02",
+      "vendas": 20367.32,
+      "vendas_ant": 13611.21,
+      "diferenca": 6756.11,
+      "percentual": 49.6,
+      "data_registro": "2026-02-14"
+    },
+    {
+      "periodo": "16/02 a 21/02",
+      "vendas": 11078.45,
+      "vendas_ant": 10957.76,
+      "diferenca": 120.69,
+      "percentual": 1.1,
+      "data_registro": "2026-02-22"
+    },
+    {
+      "periodo": "23/02 a 28/02",
+      "vendas": 3237.93,
+      "vendas_ant": 16468.93,
+      "diferenca": -13231.0,
+      "percentual": -80.3,
+      "data_registro": "2026-02-24"
+    }
+  ],
+  "fechamento": {
+    "data": "2026-02-24",
+    "vendas_total": 54424.85,
+    "meta": 80000.0,
+    "servicos_total": 1975.0,
+    "insights": {
+      "ticket_medio": 3401.55,
+      "dias_trabalhados": 16,
+      "melhor_dia_semana": "Sábado",
+      "melhor_dia_semana_media": 5014.21,
+      "pior_dia_semana": "Quarta",
+      "pior_dia_semana_media": 2426.17,
+      "media_por_dia_semana": {
+        "Segunda": 2785.89,
+        "Terça": 2473.57,
+        "Quarta": 2426.17,
+        "Quinta": 3656.11,
+        "Sexta": 3538.82,
+        "Sábado": 5014.21
+      },
+      "top5": [
+        {
+          "dia": 7,
+          "data": "2026-02-07",
+          "dia_semana": 5,
+          "dia_semana_nome": "Sábado",
+          "produtos": 5014.21,
+          "servicos": 0.0,
+          "total": 5014.21
+        },
+        {
+          "dia": 1,
+          "data": "2026-02-01",
+          "dia_semana": 6,
+          "dia_semana_nome": "Domingo",
+          "produtos": 4292.11,
+          "servicos": 0.0,
+          "total": 4292.11
+        },
+        {
+          "dia": 14,
+          "data": "2026-02-14",
+          "dia_semana": 5,
+          "dia_semana_nome": "Sábado",
+          "produtos": 4291.49,
+          "servicos": 0.0,
+          "total": 4291.49
+        },
+        {
+          "dia": 13,
+          "data": "2026-02-13",
+          "dia_semana": 4,
+          "dia_semana_nome": "Sexta",
+          "produtos": 4118.16,
+          "servicos": 0.0,
+          "total": 4118.16
+        },
+        {
+          "dia": 28,
+          "data": "2026-02-28",
+          "dia_semana": 5,
+          "dia_semana_nome": "Sábado",
+          "produtos": 4005.92,
+          "servicos": 0.0,
+          "total": 4005.92
+        }
+      ],
+      "bottom3": [
+        {
+          "dia": 23,
+          "data": "2026-02-23",
+          "dia_semana": 0,
+          "dia_semana_nome": "Segunda",
+          "produtos": 1680.44,
+          "servicos": 0.0,
+          "total": 1680.44
+        },
+        {
+          "dia": 24,
+          "data": "2026-02-24",
+          "dia_semana": 1,
+          "dia_semana_nome": "Terça",
+          "produtos": 1557.49,
+          "servicos": 0.0,
+          "total": 1557.49
+        }
+      ],
+      "tendencia_pct": -10.4,
+      "media_1a_metade": 4070.46,
+      "media_2a_metade": 3654.99,
+      "total_servicos": 1975.0,
+      "semana_mais_servicos": 3,
+      "servicos_por_semana": {
+        "1": 625.0,
+        "2": 750.0,
+        "3": 600.0,
+        "4": 0.0
+      },
+      "comparativo_semanal": [
+        {
+          "semana": 1,
+          "dia_inicio": 1,
+          "dia_fim": 7,
+          "vendas": 22979.08,
+          "vendas_ant": 16595.18,
+          "diferenca": 6383.9,
+          "percentual": 38.5
+        },
+        {
+          "semana": 2,
+          "dia_inicio": 9,
+          "dia_fim": 14,
+          "vendas": 20367.32,
+          "vendas_ant": 13611.21,
+          "diferenca": 6756.11,
+          "percentual": 49.6
+        },
+        {
+          "semana": 3,
+          "dia_inicio": 16,
+          "dia_fim": 21,
+          "vendas": 11078.45,
+          "vendas_ant": 10957.76,
+          "diferenca": 120.69,
+          "percentual": 1.1
+        },
+        {
+          "semana": 4,
+          "dia_inicio": 23,
+          "dia_fim": 24,
+          "vendas": 3237.93,
+          "vendas_ant": 2514.1,
+          "diferenca": 723.83,
+          "percentual": 28.8
+        }
+      ],
+      "dias_uteis_atual": 18,
+      "dias_uteis_anterior": 24,
+      "venda_por_dia_util_atual": 3203.49,
+      "venda_por_dia_util_ant": 2267.7,
+      "diff_por_dia_util": 935.79,
+      "pct_por_dia_util": 41.3,
+      "dias_fracos": [],
+      "dias_fechados": [],
+      "impacto_profissional": {
+        "media_com": 3222.51,
+        "media_sem": 2562.15,
+        "diferenca": 660.36,
+        "percentual": 25.8,
+        "dias_com": 6,
+        "dias_sem": 10
+      }
+    }
+  }
+}

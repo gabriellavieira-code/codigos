@@ -1,0 +1,18 @@
+[
+  {
+    "nome": "Gabriel",
+    "motivo": "férias",
+    "dia_inicio": 18,
+    "dia_fim": 28,
+    "mes": 2,
+    "ano": 2026
+  },
+  {
+    "nome": "Gabriel",
+    "motivo": "férias",
+    "dia_inicio": 1,
+    "dia_fim": 5,
+    "mes": 3,
+    "ano": 2026
+  }
+]

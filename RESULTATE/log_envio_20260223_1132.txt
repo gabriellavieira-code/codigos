@@ -1,0 +1,16 @@
+=== LOG DE ENVIO DE MENSAGENS ===
+Data: 23/02/2026 11:32
+Total de clientes processados: 9
+Mensagens com pendências: 8
+Mensagens simples: 1
+
+Clientes:
+- GABRIELLA
+- CERVEJARIA ALQUIMISTAS
+- NUTRIAGE
+- MARATONA DE VITÓRIA
+- FARMÁCIA MÔNICA
+- RBR
+- GRUPO VILA PORTO
+- INFLOW
+- VICTOR FIRMINO
