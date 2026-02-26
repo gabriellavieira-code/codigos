@@ -4,7 +4,7 @@ import sys
 import os
 from unittest.mock import patch
 
-sys.path.insert(0, r'c:\Users\gaabi\OneDrive\Desktop\Codigos\loja-automacao')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 respostas = ["", "", ""]
 contador = [0]

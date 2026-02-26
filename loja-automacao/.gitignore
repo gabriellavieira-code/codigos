@@ -1,0 +1,18 @@
+# Credenciais sensíveis — NUNCA commitar
+credentials/
+*.json
+
+# Relatórios gerados automaticamente
+relatorio.html
+relatorio_teste.html
+teste_render_pagas.html
+
+# Arquivos de cache Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos de ambiente
+.env
+*.env
