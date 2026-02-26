@@ -5,8 +5,9 @@ Lê dados diretamente do Excel de financeiro
 """
 
 import sys
+import os
 import json
-sys.path.insert(0, r'c:\Users\gaabi\OneDrive\Desktop\Codigos\loja-automacao')
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def teste_logica_zerado():
     print("=" * 80)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
-sys.path.insert(0, r'c:\Users\gaabi\OneDrive\Desktop\Codigos\loja-automacao')
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from datetime import date, timedelta
 from relatorio_semanal import calcular_semana, calcular_proxima_semana, contar_dias_restantes
