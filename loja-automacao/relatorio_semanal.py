@@ -2175,6 +2175,52 @@ def gerar_html(r, mensagem_texto):
             </div>
         </div>"""
 
+    # ── Painel de saldos (Sicoob + Nubank + Caixa Loja) ──
+    painel_saldos_html = ""
+    fin_dados = r.get("financeiro")
+    if fin_dados:
+        sc = fin_dados.get("saldos_contas", {})
+        sic = sc.get("sicoob", 0)
+        nub = sc.get("nubank", 0)
+        cai = sc.get("caixa_loja", 0)
+        tot = sc.get("total_geral", sic + nub + cai)
+        nub_pct = sc.get("nubank_pct_meta", 0)
+        nub_falta = sc.get("nubank_falta_meta", 0)
+        META_NUB = fin_dados.get("meta_nubank", 50000)  # fallback
+
+        cor_nub_barra = "#8B5CF6" if nub_pct >= 50 else "#E6A834" if nub_pct >= 25 else "#B84527"
+
+        painel_saldos_html = f"""
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;">
+        <!-- Sicoob -->
+        <div style="flex:1;min-width:160px;background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 20px rgba(50,77,56,0.06);border:1px solid rgba(50,77,56,0.08);text-align:center;">
+            <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:8px;">🏦 Sicoob</div>
+            <div style="font-size:1.4em;font-weight:700;color:#324D38;">{formatar_moeda(sic)}</div>
+        </div>
+        <!-- Nubank -->
+        <div style="flex:2;min-width:220px;background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 20px rgba(50,77,56,0.06);border:1px solid rgba(50,77,56,0.08);">
+            <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8B5CF6;font-weight:600;margin-bottom:8px;text-align:center;">💜 Nubank (CDB)</div>
+            <div style="font-size:1.4em;font-weight:700;color:#1a1a2e;text-align:center;margin-bottom:10px;">{formatar_moeda(nub)}</div>
+            <div style="background:#edeadf;border-radius:10px;height:12px;overflow:hidden;margin-bottom:6px;">
+                <div style="background:{cor_nub_barra};height:100%;width:{min(nub_pct, 100):.0f}%;border-radius:10px;transition:width 0.5s;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:0.75em;color:#888;">
+                <span>{nub_pct:.0f}% da meta</span>
+                <span>Faltam {formatar_moeda(nub_falta)}</span>
+            </div>
+        </div>
+        <!-- Caixa Loja -->
+        <div style="flex:1;min-width:160px;background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 20px rgba(50,77,56,0.06);border:1px solid rgba(50,77,56,0.08);text-align:center;">
+            <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:8px;">🏪 Caixa Loja</div>
+            <div style="font-size:1.4em;font-weight:700;color:#324D38;">{formatar_moeda(cai)}</div>
+        </div>
+        <!-- Total -->
+        <div style="flex:1;min-width:160px;background:linear-gradient(135deg,#324D38,#4a6b52);border-radius:16px;padding:20px;box-shadow:0 2px 20px rgba(50,77,56,0.15);text-align:center;">
+            <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#C7CF9E;font-weight:600;margin-bottom:8px;">💰 Total Geral</div>
+            <div style="font-size:1.4em;font-weight:700;color:#F5F3EC;">{formatar_moeda(tot)}</div>
+        </div>
+    </div>"""
+
     html = f"""<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -2267,6 +2313,7 @@ def gerar_html(r, mensagem_texto):
 <body>
 <div class="container">
     <div class="header">{logo_html}<h1>{modo_titulo}</h1><div class="subtitle">{nome_mes} {ano} — Dia {dia:02d}/{hoje.month:02d}/{ano}</div>{modo_badge}</div>
+    {painel_saldos_html}
     {aviso_html}
     <div class="meta-section">
         <div class="meta-numeros">
