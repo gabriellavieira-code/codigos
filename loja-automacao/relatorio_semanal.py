@@ -2187,28 +2187,31 @@ def gerar_html(r, mensagem_texto):
         nub_pct = saldos.get("nubank_pct_meta", 0)
         nub_falta = saldos.get("nubank_falta_meta", 0)
         cor_nub_barra = "#8B5CF6" if nub_pct >= 50 else "#E6A834" if nub_pct >= 25 else "#B84527"
-        painel_saldos_html = f"""<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px;">
-            <div style="background:#fff;border-radius:14px;padding:18px;text-align:center;border:1px solid rgba(50,77,56,0.1);">
-                <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:8px;">Sicoob</div>
-                <div style="font-size:1.5em;font-weight:700;color:#324D38;">{formatar_moeda(sicoob)}</div>
+        painel_saldos_html = f"""<div style="background:#fff;border-radius:18px;padding:28px;margin-bottom:18px;box-shadow:0 2px 20px rgba(50,77,56,0.06);border:1px solid rgba(50,77,56,0.08);">
+    <div style="font-size:0.8em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:14px;">💰 Saldos das Contas</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:0;">
+        <div style="background:#fff;border-radius:14px;padding:18px;text-align:center;border:1px solid rgba(50,77,56,0.1);">
+            <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:8px;">Sicoob</div>
+            <div style="font-size:1.5em;font-weight:700;color:#324D38;">{formatar_moeda(sicoob)}</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#1a1a2e,#2d2d44);border-radius:14px;padding:18px;text-align:center;">
+            <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.6);font-weight:600;margin-bottom:8px;">Nubank (CDB)</div>
+            <div style="font-size:1.5em;font-weight:700;color:#fff;margin-bottom:8px;">{formatar_moeda(nubank)}</div>
+            <div style="background:rgba(255,255,255,0.15);border-radius:20px;height:8px;overflow:hidden;margin-bottom:4px;">
+                <div style="background:{cor_nub_barra};height:100%;width:{min(nub_pct,100):.0f}%;border-radius:20px;"></div>
             </div>
-            <div style="background:linear-gradient(135deg,#1a1a2e,#2d2d44);border-radius:14px;padding:18px;text-align:center;">
-                <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.6);font-weight:600;margin-bottom:8px;">Nubank (CDB)</div>
-                <div style="font-size:1.5em;font-weight:700;color:#fff;margin-bottom:8px;">{formatar_moeda(nubank)}</div>
-                <div style="background:rgba(255,255,255,0.15);border-radius:20px;height:8px;overflow:hidden;margin-bottom:4px;">
-                    <div style="background:{cor_nub_barra};height:100%;width:{min(nub_pct,100):.0f}%;border-radius:20px;"></div>
-                </div>
-                <div style="font-size:0.72em;color:rgba(255,255,255,0.6);">{nub_pct:.0f}% da meta - faltam {formatar_moeda(nub_falta)}</div>
-            </div>
-            <div style="background:#fff;border-radius:14px;padding:18px;text-align:center;border:1px solid rgba(50,77,56,0.1);">
-                <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:8px;">Caixa Loja</div>
-                <div style="font-size:1.5em;font-weight:700;color:#324D38;">{formatar_moeda(caixa_loja)}</div>
-            </div>
-            <div style="background:rgba(50,77,56,0.06);border-radius:14px;padding:18px;text-align:center;border:2px solid rgba(50,77,56,0.15);">
-                <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:8px;">Total Geral</div>
-                <div style="font-size:1.5em;font-weight:700;color:#324D38;">{formatar_moeda(total_geral)}</div>
-            </div>
-        </div>"""
+            <div style="font-size:0.72em;color:rgba(255,255,255,0.6);">{nub_pct:.0f}% da meta - faltam {formatar_moeda(nub_falta)}</div>
+        </div>
+        <div style="background:#fff;border-radius:14px;padding:18px;text-align:center;border:1px solid rgba(50,77,56,0.1);">
+            <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:8px;">Caixa Loja</div>
+            <div style="font-size:1.5em;font-weight:700;color:#324D38;">{formatar_moeda(caixa_loja)}</div>
+        </div>
+        <div style="background:rgba(50,77,56,0.06);border-radius:14px;padding:18px;text-align:center;border:2px solid rgba(50,77,56,0.15);">
+            <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:8px;">Total Geral</div>
+            <div style="font-size:1.5em;font-weight:700;color:#324D38;">{formatar_moeda(total_geral)}</div>
+        </div>
+    </div>
+</div>"""
 
     html = f"""<!DOCTYPE html>
 <html lang="pt-BR">
