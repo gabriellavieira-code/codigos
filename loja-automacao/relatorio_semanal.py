@@ -2176,7 +2176,7 @@ def gerar_html(r, mensagem_texto):
         </div>"""
 
     # ── Painel de Saldos ──
-    painel_saldos_html = ""
+    fin = r.get("financeiro")
     saldos = fin.get("saldos_contas", {}) if fin else {}
     sicoob = saldos.get("sicoob", 0)
     nubank = saldos.get("nubank", 0)
@@ -2187,7 +2187,7 @@ def gerar_html(r, mensagem_texto):
     cor_nub_barra = "#8B5CF6" if nub_pct >= 50 else "#E6A834" if nub_pct >= 25 else "#B84527"
     painel_saldos_html = f"""<div style="background:#fff;border-radius:18px;padding:28px;margin-bottom:18px;box-shadow:0 2px 20px rgba(50,77,56,0.06);border:1px solid rgba(50,77,56,0.08);">
     <div style="font-size:0.8em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:14px;">💰 Saldos das Contas</div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:0;">
         <div style="background:#fff;border-radius:14px;padding:18px;text-align:center;border:1px solid rgba(50,77,56,0.1);">
             <div style="font-size:0.7em;text-transform:uppercase;letter-spacing:1.5px;color:#8BA279;font-weight:600;margin-bottom:8px;">Sicoob</div>
             <div style="font-size:1.5em;font-weight:700;color:#324D38;">{formatar_moeda(sicoob)}</div>
@@ -2209,6 +2209,7 @@ def gerar_html(r, mensagem_texto):
             <div style="font-size:1.5em;font-weight:700;color:#324D38;">{formatar_moeda(total_geral)}</div>
         </div>
     </div>
+
 </div>"""
 
     html = f"""<!DOCTYPE html>
