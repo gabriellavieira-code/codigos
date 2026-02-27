@@ -1616,7 +1616,8 @@ def gerar_html(r, mensagem_texto):
                 tag_fixa = ' <span style="color:#B84527;font-size:0.75em">🔒</span>' if c["fixa"] else ""
                 tag_neg = ' <span style="color:#4B556E;font-size:0.75em">🤝</span>' if c["negociavel"] else ""
                 tag_conta = f' <span style="color:#888;font-size:0.75em">[{c["conta_financeira"]}]</span>' if c["conta_financeira"] not in ("SICOOB", "", "None") else ""
-                rows_dia += f'<tr><td>{c["descricao"][:55]}{tag_fixa}{tag_neg}{tag_conta}</td><td class="num">{formatar_moeda(c["valor"])}</td></tr>'
+                forn_html = f'<span style="color:#888;font-size:0.75em">{c.get("fornecedor") or ""}</span>' if c.get("fornecedor") else ""
+                rows_dia += f'<tr><td>{c["descricao"][:55]}{tag_fixa}{tag_neg}{tag_conta}<br>{forn_html}</td><td class="num">{formatar_moeda(c["valor"])}</td></tr>'
 
             # Contas já pagas (Realizado) — com checkmark visual
             rows_pagas = ""
@@ -1625,9 +1626,10 @@ def gerar_html(r, mensagem_texto):
                 for c in sorted(d["pagas"], key=lambda x: x["valor"], reverse=True):
                     total_pagas_dia += c["valor"]
                     tag_conta = f' <span style="color:#888;font-size:0.75em">[{c["conta_financeira"]}]</span>' if c["conta_financeira"] not in ("SICOOB", "", "None") else ""
-                    rows_pagas += f'<tr style="opacity:0.7;background:rgba(50,77,56,0.05)"><td>✅ {c["descricao"][:50]}{tag_conta}</td><td class="num" style="color:#324D38">{formatar_moeda(c["valor"])}</td></tr>'
+                    forn_html = f'<span style="color:#888;font-size:0.75em">{c.get("fornecedor") or ""}</span>' if c.get("fornecedor") else ""
+                    rows_pagas += f'<tr style="opacity:0.7;background:rgba(50,77,56,0.05)"><td>✅ {c["descricao"][:50]}{tag_conta}<br>{forn_html}</td><td class="num" style="color:#324D38">{formatar_moeda(c["valor"])}</td></tr>'
 
-            saldo_apos = saldo_corrente - d["total"]
+            saldo_apos = saldo_corrente - total_pagas_dia
             cor_saldo_dia = "#324D38" if saldo_apos >= 2000 else "#B84527" if saldo_apos < 0 else "#E6A834"
 
             # Cor da borda baseada no TOTAL (a pagar + pagas)
@@ -1642,8 +1644,11 @@ def gerar_html(r, mensagem_texto):
             tem_contas_totais = bool(d["contas"] or d.get("pagas"))
             
             if tem_contas_totais:
-                saldo_label = f'<div style="text-align:right;margin-top:8px;padding-top:8px;border-top:1px solid rgba(75,85,110,0.1);font-size:0.82em">Caixa antes: <strong>{formatar_moeda(saldo_corrente)}</strong> → Caixa após: <strong style="color:{cor_saldo_dia}">{formatar_moeda(saldo_apos)}</strong></div>'
-                saldo_corrente = saldo_apos
+                if total_pagas_dia > 0:
+                    saldo_label = f'<div style="text-align:right;margin-top:8px;padding-top:8px;border-top:1px solid rgba(75,85,110,0.1);font-size:0.82em">Caixa antes: <strong>{formatar_moeda(saldo_corrente)}</strong> → Caixa após pagamentos: <strong style="color:{cor_saldo_dia}">{formatar_moeda(saldo_apos)}</strong></div>'
+                    saldo_corrente = saldo_apos
+                else:
+                    saldo_label = f'<div style="text-align:right;margin-top:8px;padding-top:8px;border-top:1px solid rgba(75,85,110,0.1);font-size:0.82em">Caixa: <strong>{formatar_moeda(saldo_corrente)}</strong></div>'
             else:
                 saldo_label = f'<div style="font-size:0.85em;color:#888">Zerado — Caixa: <strong>{formatar_moeda(saldo_corrente)}</strong></div>'
 

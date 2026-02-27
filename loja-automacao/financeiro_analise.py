@@ -332,15 +332,15 @@ def ler_saldos_contas(wb):
                     val = ws.cell(i, j + 1).value
                     try:
                         v = float(val)
-                        if v > 0 and saldos["nubank"] == 0:  # Só pega o primeiro encontrado
+                        if v is not None and saldos["nubank"] == 0:  # Só pega o primeiro encontrado
                             saldos["nubank"] = round(v, 2)
                     except (ValueError, TypeError):
                         pass
-                elif celula == "SICOOB":
+                elif "SICOOB" in celula and "NUBANK" not in celula:
                     val = ws.cell(i, j + 1).value
                     try:
                         v = float(val)
-                        if v > 0 and saldos["sicoob"] == 0:
+                        if v is not None and saldos["sicoob"] == 0:
                             saldos["sicoob"] = round(v, 2)
                     except (ValueError, TypeError):
                         pass
@@ -348,7 +348,7 @@ def ler_saldos_contas(wb):
                     val = ws.cell(i, j + 1).value
                     try:
                         v = float(val)
-                        if v > 0 and saldos["caixa_loja"] == 0:
+                        if v is not None and saldos["caixa_loja"] == 0:
                             saldos["caixa_loja"] = round(v, 2)
                     except (ValueError, TypeError):
                         pass
@@ -497,19 +497,28 @@ def gerar_contas_semana(contas, data_referencia=None):
             for c in sorted(d["contas"], key=lambda x: x["valor"], reverse=True):
                 conta_tag = f" [{c['conta_financeira']}]" if c["conta_financeira"] not in ("SICOOB", "", "None") else ""
                 neg_tag = " ✅NEGOCIÁVEL" if c["negociavel"] else ""
+                forn = c.get("fornecedor") or ""
+                forma = c.get("forma_pagamento") or ""
                 texto_partes.append(
                     f"  {c['data_original'].strftime('%d/%m/%Y') if c['data_original'] else '?'}\t"
                     f"{c['descricao'][:55]}\t"
-                    f"R$ {c['valor']:,.2f}{conta_tag}{neg_tag}"
+                    f"Previsto\t"
+                    f"{forn}\t"
+                    f"R$ {c['valor']:,.2f}{conta_tag}{neg_tag}\t"
+                    f"{forma}"
                 )
         
         # Contas pagas (destacar)
         if d["pagas"]:
             texto_partes.append("✅ JÁ PAGO:")
             for c in sorted(d["pagas"], key=lambda x: x["valor"], reverse=True):
+                forn = c.get("fornecedor") or ""
+                forma = c.get("forma_pagamento") or ""
                 texto_partes.append(
                     f"  {c['descricao'][:55]}\t"
-                    f"R$ {c['valor']:,.2f}"
+                    f"{forn}\t"
+                    f"R$ {c['valor']:,.2f}\t"
+                    f"{forma}"
                 )
         
         texto_partes.append(f"TOTAL: R$ {d['total']:,.2f}")
@@ -1849,7 +1858,7 @@ def gerar_mensagem_wpp(sem, saldo_info, nubank, meta_ads, adiamentos):
 
     partes.append("📋 *CONTAS A PAGAR NA SEMANA*")
     partes.append(f"Semana {sem['inicio'].strftime('%d/%m')} a {sem['fim'].strftime('%d/%m/%Y')}")
-    partes.append(f"Saldo em caixa: {fmt_valor(saldo_info['saldo'])}")
+    partes.append(f"Saldo Sicoob: {fmt_valor(saldo_info['saldo'])}")
     partes.append("_________")
 
     saldo_corrente = saldo_info["saldo"]
@@ -1861,7 +1870,13 @@ def gerar_mensagem_wpp(sem, saldo_info, nubank, meta_ads, adiamentos):
             for c in sorted(d["contas"], key=lambda x: x["valor"], reverse=True):
                 conta_tag = f" [{c['conta_financeira']}]" if c["conta_financeira"] not in ("SICOOB", "", "None") else ""
                 desc_base = c['descricao'][:38 - len(conta_tag)] + conta_tag
-                partes.append(formatar_linha(desc_base, fmt_valor(c['valor'])))
+                forn = (c.get("fornecedor") or "")[:25]
+                forma = (c.get("forma_pagamento") or "")[:12]
+                linha = formatar_linha(desc_base, fmt_valor(c['valor']))
+                extra = "  ".join(x for x in [forn, forma] if x)
+                if extra:
+                    linha += f"  {extra}"
+                partes.append(linha)
         
         # Contas pagas (Realizado/Pago)
         if d.get("pagas"):
@@ -1869,23 +1884,28 @@ def gerar_mensagem_wpp(sem, saldo_info, nubank, meta_ads, adiamentos):
             for c in sorted(d["pagas"], key=lambda x: x["valor"], reverse=True):
                 conta_tag = f" [{c['conta_financeira']}]" if c["conta_financeira"] not in ("SICOOB", "", "None") else ""
                 desc_base = c['descricao'][:38 - len(conta_tag)] + conta_tag
-                partes.append(f"✓ {formatar_linha(desc_base, fmt_valor(c['valor']))}")
+                forn = (c.get("fornecedor") or "")[:25]
+                forma = (c.get("forma_pagamento") or "")[:12]
+                linha = f"✓ {formatar_linha(desc_base, fmt_valor(c['valor']))}"
+                extra = "  ".join(x for x in [forn, forma] if x)
+                if extra:
+                    linha += f"  {extra}"
+                partes.append(linha)
         
         # Apenas mostra zerado se NÃO há contas a pagar NEM pagas
         if not d["contas"] and not d.get("pagas"):
             partes.append("Zerado")
         
-        saldo_corrente -= d["total"]
-        partes.append(formatar_linha("*TOTAL*", fmt_valor(d['total'])))
-        
-        # Mostrar total pagas do dia se houver
         if d.get("pagas"):
             total_pagas_dia = sum(c["valor"] for c in d["pagas"])
+            saldo_antes = saldo_corrente
+            saldo_corrente -= total_pagas_dia  # Só desconta contas efetivamente pagas
             partes.append(formatar_linha("*Já pago*", fmt_valor(total_pagas_dia)))
+            # Exibe fórmula: saldo_antes - total_pagas_dia = saldo_corrente (já calculado acima)
+            partes.append(f"*TOTAL NO CAIXA* = R$ {saldo_antes:,.2f} - R$ {total_pagas_dia:,.2f} = R$ {saldo_corrente:,.2f}")
         
         if d["contas"]:
-            caixa_txt = f"R$ {saldo_corrente:>9,.2f}"
-            partes.append(f"  → Caixa após:{NBSP * 20}{caixa_txt}")
+            partes.append(formatar_linha("*TOTAL*", fmt_valor(d['total'])))
         partes.append("_________")
 
     partes.append(f"\n💰 *TOTAL DA SEMANA:{NBSP * 15}{fmt_valor(sem['total_semana'])}*")
