@@ -458,7 +458,7 @@ def gerar_contas_semana(contas, data_referencia=None):
             dias[d] = {"nome_dia": nomes_dias.get(d.weekday(), "?"),
                        "data": d, "contas": [], "pagas": [], "total": 0, "total_realizado": 0,
                        "total_sicoob": 0, "total_nubank": 0,
-                       "passou": d < date.today()}
+                       "passou": d <= date.today()}
 
     dias_ordenados = sorted(dias.values(), key=lambda x: x["data"])
 
