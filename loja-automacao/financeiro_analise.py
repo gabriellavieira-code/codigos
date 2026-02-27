@@ -315,6 +315,64 @@ def ler_saldo_caixa(wb):
     return {"saldo": round(ultimo_saldo, 2), "data": ultima_data}
 
 
+def ler_saldo_inicio_semana(wb, data_inicio_semana):
+    """Lê o saldo acumulado da aba FCD para o primeiro dia útil da semana.
+
+    Busca a linha cuja data seja igual a `data_inicio_semana` (segunda-feira).
+    Se não encontrar exatamente essa data, retorna o último saldo disponível
+    antes dela (fallback).
+    """
+    ws = wb['FCD']
+    ultimo_saldo = 0
+    ultima_data = None
+
+    # Row/column layout mirrors ler_saldo_caixa: data starts at row 14,
+    # date in column D (4), accumulated saldo in column H (8)
+    for i in range(14, ws.max_row + 1):
+        dia = ws.cell(i, 4).value
+        acum = ws.cell(i, 8).value
+
+        if dia and hasattr(dia, 'year'):
+            dt = dia.date() if hasattr(dia, 'date') else dia
+            if acum is not None:
+                try:
+                    v = float(acum)
+                except (ValueError, TypeError):
+                    continue
+                if dt == data_inicio_semana:
+                    return {"saldo": round(v, 2), "data": dt}
+                if dt < data_inicio_semana:
+                    ultimo_saldo = v
+                    ultima_data = dt
+
+    # Fallback: último saldo disponível antes da data de início da semana
+    return {"saldo": round(ultimo_saldo, 2), "data": ultima_data}
+
+
+def _parse_valor_moeda(val):
+    """Converte valor numérico ou string formatada (ex: 'R$ 6.314,80') para float.
+
+    Suporta formato brasileiro (vírgula decimal, ponto milhar) e formato
+    internacional (ponto decimal). Retorna float ou None em caso de falha.
+    """
+    if val is None:
+        return None
+    if isinstance(val, (int, float)):
+        return float(val)
+    try:
+        s = str(val).replace("R$", "").replace(" ", "")
+        if "," in s and "." in s:
+            # Formato brasileiro: 6.314,80 → remove pontos de milhar, troca vírgula
+            s = s.replace(".", "").replace(",", ".")
+        elif "," in s:
+            # Apenas vírgula: 6314,80 → troca por ponto
+            s = s.replace(",", ".")
+        # Caso contrário (apenas ponto ou nenhum separador): já está em formato float
+        return float(s)
+    except (ValueError, TypeError):
+        return None
+
+
 def ler_saldos_contas(wb):
     """Lê saldos de todas as contas financeiras (AVAH ou OUTROS)."""
     # Tentar aba AVAH primeiro (mais atualizada)
@@ -329,29 +387,17 @@ def ler_saldos_contas(wb):
             for j in range(1, min(15, ws.max_column + 1)):
                 celula = str(ws.cell(i, j).value or "").strip().upper()
                 if "NUBANK" in celula:
-                    val = ws.cell(i, j + 1).value
-                    try:
-                        v = float(val)
-                        if v is not None and saldos["nubank"] == 0:  # Só pega o primeiro encontrado
-                            saldos["nubank"] = round(v, 2)
-                    except (ValueError, TypeError):
-                        pass
+                    v = _parse_valor_moeda(ws.cell(i, j + 1).value)
+                    if v is not None and saldos["nubank"] == 0:  # Só pega o primeiro encontrado
+                        saldos["nubank"] = round(v, 2)
                 elif "SICOOB" in celula and "NUBANK" not in celula:
-                    val = ws.cell(i, j + 1).value
-                    try:
-                        v = float(val)
-                        if v is not None and saldos["sicoob"] == 0:
-                            saldos["sicoob"] = round(v, 2)
-                    except (ValueError, TypeError):
-                        pass
+                    v = _parse_valor_moeda(ws.cell(i, j + 1).value)
+                    if v is not None and saldos["sicoob"] == 0:
+                        saldos["sicoob"] = round(v, 2)
                 elif "CAIXA LOJA" in celula:
-                    val = ws.cell(i, j + 1).value
-                    try:
-                        v = float(val)
-                        if v is not None and saldos["caixa_loja"] == 0:
-                            saldos["caixa_loja"] = round(v, 2)
-                    except (ValueError, TypeError):
-                        pass
+                    v = _parse_valor_moeda(ws.cell(i, j + 1).value)
+                    if v is not None and saldos["caixa_loja"] == 0:
+                        saldos["caixa_loja"] = round(v, 2)
 
     saldos["total_geral"] = round(saldos["sicoob"] + saldos["nubank"] + saldos["caixa_loja"], 2)
     saldos["nubank_falta_meta"] = round(max(0, META_NUBANK - saldos["nubank"]), 2)
@@ -2348,7 +2394,8 @@ def carregar_financeiro(fechamento=False):
     # A previsão é só informativa, não pode mudar decisões de adiamento
     adiamentos = sugerir_adiamentos(semana, saldo, contas)
 
-    mensagem_wpp = gerar_mensagem_wpp(semana, saldo, nubank, meta_ads, adiamentos)
+    saldo_inicio_semana = ler_saldo_inicio_semana(wb, semana["inicio"])
+    mensagem_wpp = gerar_mensagem_wpp(semana, saldo_inicio_semana, nubank, meta_ads, adiamentos)
 
     # Alertas sazonais
     alertas_sazonais = get_alerta_sazonal()
