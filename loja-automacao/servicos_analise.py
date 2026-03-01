@@ -125,7 +125,7 @@ def classificar_tipo(tipo_texto, valor=0):
         return "compra_produto"
     elif "COMPROU" in t and "HASKELL" in t:
         return "compra_produto"
-    elif "COMPROU" in t and ("BOTHÂNICO" in t or "BOTANICO" in t):
+    elif "COMPROU" in t and ("NATURALLES" in t or "BOTHÂNICO" in t or "BOTANICO" in t):
         return "compra_produto"
     elif "COMPROU" in t:
         return "compra_produto"

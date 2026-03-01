@@ -23,7 +23,7 @@ FORNECEDORES_MES = [
         "observacao": "",
     },
     {
-        "nome": "Bothânico",
+        "nome": "Naturalles",
         "prazos": [45, 60, 75],
         "prazo_livre": True,
         "valor_sugerido": "Conservador (1º pedido)",
